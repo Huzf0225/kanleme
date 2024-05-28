@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>政治新闻</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/static/css/icomoon.css" />
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.2.1/dist/echarts.min.js"></script>
+    <script src="\static\js\echarts-wordcloud.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/map/js/world.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts-gl/dist/echarts-gl.min.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+
+        }
+
+        header {
+            position: relative;
+            top: 2.1875rem;
+            height: 3.0rem;
+            background: url('../static/images/head_bg3.png') no-repeat top center;
+            background-size: 100% 100%;
+
+            h1 {
+                font-size: 1.275rem;
+                color: #fff;
+                text-align: center;
+                line-height: 3rem;
+            }
+
+            .showTime {
+                position: absolute;
+                top: 0.6rem;
+                right: 0.675rem;
+                line-height: 1rem;
+                font-size: 1rem;
+                color: rgba(255, 255, 255, 0.7);
+            }
+        }
+
+        .index-box {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            background-color: #f5f5f5;
+            padding: 10px 0;
+            z-index: 999;
+        }
+
+        .index-item {
+            width: 20%;
+            text-align: center;
+            background-color: #fff;
+            color: #333;
+            cursor: pointer;
+            border: none;
+        }
+
+        .selected {
+            background-color: #eb4634;
+            color: white;
+
+        }
+
+        .section-title {
+            text-align: center;
+            padding: 50px 0;
+            color: #000000;
+            width: 33%;
+            float: left;
+        }
+
+        .back-button {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            padding: 10px 20px;
+            background-color: #eb4634;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            /* 添加圆角 */
+            text-align: center;
+            /* 文本居中 */
+            font-size: 16px;
+            /* 字体大小 */
+            z-index: 999;
+            /* 确保按钮在页面其他元素之上 */
+        }
+    </style>
+</head>
+
+<body>
+
+    <button class="back-button" onclick="location.href='index.html'">返回首页</button>
+    <div class="index-box">
+        <button class="index-item selected" onclick="recordClick('politics','political.html')">政治新闻</button>
+        <button class="index-item" onclick="recordClick('finance','economy.html')">财经新闻</button>
+        <button class="index-item" onclick="recordClick('technology', 'tech.html')">科技新闻</button>
+        <button class="index-item " onclick="recordClick('sports','hotTopics.html')">热点新闻</button>
+    </div>
+    <script>
+        function recordClick(category, pageUrl) {
+            var currentCount = parseInt(localStorage.getItem(category)) || 0;
+            currentCount++;
+            localStorage.setItem(category, currentCount);
+            window.location.href = pageUrl + '?clickCount=' + currentCount;
+        }
+        console.log(currentCount);
+    </script>
+    <header>
+        <h1>政治新闻 · Politics</h1>
+        <div class="showTime"> </div>
+        <script>
+            var ti = null;
+            ti = setTimeout(time, 1000);//開始运行
+            function time() {
+                clearTimeout(ti);//清除定时器
+                dt = new Date();
+                var y = dt.getFullYear();
+                var mt = dt.getMonth() + 1;
+                var day = dt.getDate();
+                var h = dt.getHours();//获取时
+                var m = dt.getMinutes();//获取分
+                var s = dt.getSeconds();//获取秒
+                document.querySelector(".showTime").innerHTML = '当前时间：' + y + "年" + mt + "月" + day + "日" + h + "时" + m + "分" + s + "秒";
+                ti = setTimeout(time, 1000); //设定定时器，循环运行     
+            }
+        </script>
+    </header>
+
+    <div class="viewport">
+        <div class="column">
+            <div class="highlights" style="height: 300px;width: 380px;top:40px;background-color: rgba(255, 255, 255, 0.2);border-radius: 20px; /* 设置圆角大小 */  
+  overflow: hidden; /* 确保内容不会超出圆角区域 */"></div>
+            <script>
+                var titles = [[titles | safe]]
+                var lightUrl = [[lightUrl | safe]]
+                var childrenList = []
+                for (var i = 0; i < titles.length; i++) {
+                    var obj = {
+                        name: titles[i],
+                        url: lightUrl[i]
+                    };
+                    childrenList.push(obj);
+                }
+                const dataListh = [{
+                    name: '要闻',
+                    children: childrenList
+                }]
+
+
+                var myCharts = echarts.init(document.querySelector('.highlights'))
+                var option = {
+                    tooltip: {
+                        trigger: 'item',
+                        triggerOn: 'mousemove',
+                        formatter: function (params) {
+                            return params.data.name
+                        }
+                    },
+                     title: {
+                        text: "国内要闻",
+                        top: "5%",
+                        left: 'center' ,
+                        textStyle:
+                        {
+                            color: '#4A312C',
+                            fontSize: 16
+                        }
+                    },
+                    series: [
+                        {
+                            type: 'tree',
+                            initialTreeDepth: 1,
+                            data: dataListh,
+                            top: '15%',
+                            left: '9%',
+                            bottom: '15%',
+                            right: '70%',
+                            symbolSize: 7,
+                            itemStyle: {
+                                color: '#BF5A2A'     //节点颜色（但是中心还是白色）
+                            },
+                            lineStyle: {
+                                curveness: 0.4,
+                                color: '#B33326'    //线条颜色
+                            },
+
+                            label: {
+                                position: 'left',
+                                verticalAlign: 'middle',
+                                align: 'center',
+                                fontSize: 16,
+                                color: '#4A312C',
+                                width:240,
+                                overflow:'break',
+                            },
+                            leaves: {
+                                label: {
+                                    color: '#4A312C',
+                                    overflow: 'break',
+                                    position: 'right',
+                                    verticalAlign: 'middle',
+                                    align: 'left',
+                                    fontSize: 14,
+                                    formatter: function (params) {
+                                        return params.data.name
+                                    }
+                                },
+                                tooltip: {
+                                    formatter: function (params) {
+                                        return params.data.name
+                                    }
+                                },
+                                emphasis: {
+                                    focus: 'descendant'
+                                },
+                                expandAndCollapse: false,
+                                animationDuration: 550,
+                                animationDurationUpdate: 750
+                            }
+                        }
+                    ]
+                }
+                myCharts.setOption(option)
+                myCharts.on('click', function (e) {
+                    window.open(e.data.url);
+                })
+            </script>
+            <div class="plCom" style="height: 300px; width: 370px; margin-top: 50px; background-color: rgba(255, 255, 255, 0.2);border-radius: 20px; /* 设置圆角大小 */  
+  overflow: hidden; /* 确保内容不会超出圆角区域 */"></div>
+            <script>
+
+                var plComtitles = [[plComtitles | safe]]
+                var plComSum = [[plComSum | safe]]
+                var colorList = ['#A54124', '#4A312C', '#007E7F', '#FAD8C8', '#005B77']    //饼图中各部分颜色
+                var dataList = []
+                for (var i = 0; i < 5; i++) {
+                    var obj = {
+                        name: plComtitles[i],
+                        value: plComSum[i],
+                        itemStyle: {
+                            color: colorList[i]
+                        }
+                    }
+                    dataList.push(obj)
+                }
+                var myCharts = echarts.init(document.querySelector('.plCom'))
+                var option = {
+                     title: {
+                        text: "点击排行榜",
+                        top: "5%",
+                        left:  'center' ,
+                        textStyle:
+                        {
+                            color: '#4A312C',
+                            fontSize: 16
+                        }
+                    },
+                    legend: {
+                        icon: 'circle',
+                        data: plComtitles,
+                        textStyle: {
+                            color: '#007E7F',       //右侧文本颜色
+                            fontSize: 12,
+                            width: 160,
+                            overflow: 'break',
+                        },
+                        right: 0,
+                        top: 'center',
+                        orient: 'vertical',
+                        itemGap: 15
+                    },
+                    series: [{
+                        left:  80 ,
+                        // 禁止放大
+                        hoverAnimation: false,
+                        radius: [0, 90],
+                        center: ['-5%', '50%'],
+                        type: 'pie',
+                        label: { normal: { show: false }, emphasis: { show: false } },
+                        labelLine: { normal: { show: false }, emphasis: { show: false } },
+                        animation: false,
+                        tooltip: { show: false },
+                        // 阴影颜色
+                        itemStyle: { color: 'rgba(247,185,113,0.5)' },        //最底层半圆颜色
+                        data: [{ value: 1 }, { value: 1, itemStyle: { color: 'rgba(0,0,0,0)' } }],
+                    }, {
+                        left: 0,
+                        name: "新闻评论排行榜",
+                        type: "pie",
+                        radius: [0, 80],
+                        avoidLabelOverlap: false,
+                        startAngle: 90,
+                        endAngle: 270,
+                        center: ["17%", "50%"],
+                        roseType: "area",
+                        selectedMode: "single",
+                        label: {
+                            show: false,
+                        },
+                        blur: {
+                            itemStyle: {
+                                shadowColor: 'rgba(255,255,255,0.8)',
+                                shadowBlur: 5
+                            }
+                        },
+                        data: dataList
+                    }]
+
+                }
+                myCharts.setOption(option)
+
+            </script>
+        </div>
+        <div class="column">
+            <div class="internationalCountries" style="height: 480px;width: 700px;top:5px;right:13%;"></div>
+            <script>
+                var countriesLocation= {
+                    'Afghanistan':  [67.709953, 33.93911],
+                    'Angola':  [17.873887, -11.202692],
+                    'Albania':  [20.168331, 41.153332],
+                    'United Arab Emirates': [53.847818, 23.424076],
+                    'Argentina': [-63.61667199999999, -38.416097],
+                    'Armenia': [45.038189, 40.069099],
+                    'French Southern and Antarctic Lands': [69.348557, -49.280366],
+                    'Australia': [133.775136, -25.274398],
+                    'Austria': [14.550072, 47.516231],
+                    'Azerbaijan': [47.576927, 40.143105],
+                    'Burundi': [29.918886, -3.373056],
+                    'Belgium': [4.469936, 50.503887],
+                    'Benin': [2.315834, 9.30769],
+                    'Burkina Faso': [-1.561593, 12.238333],
+                    'Bangladesh': [90.356331, 23.684994],
+                    'Bulgaria': [25.48583, 42.733883],
+                    'Bahamas': [-77.39627999999999, 25.03428],
+                    'Bosnia and Herzegovina': [17.679076, 43.915886],
+                    'Belarus': [27.953389, 53.709807],
+                    'Belize': [-88.49765, 17.189877],
+                    'Bermuda': [-64.7505, 32.3078],
+                    'Bolivia': [-63.58865299999999, -16.290154],
+                    'Brazil': [-51.92528, -14.235004],
+                    'Brunei': [114.727669, 4.535277],
+                    'Bhutan': [90.433601, 27.514162],
+                    'Botswana': [24.684866, -22.328474],
+                    'Central African Republic': [20.939444, 6.611110999999999],
+                    'Canada': [-106.346771, 56.130366],
+                    'Switzerland': [8.227511999999999, 46.818188],
+                    'Chile': [-71.542969, -35.675147],
+                    'China': [104.195397, 35.86166],
+                    'Ivory Coast': [-5.5470799999999999, 7.5399889999999999],
+                    'Cameroon': [12.354722, 7.369721999999999],
+                    'Democratic Republic of the Congo': [21.758664, -4.038333],
+                    'Republic of the Congo': [15.827659, -0.228021],
+                    'Colombia': [-74.297333, 4.570868],
+                    'Costa Rica': [-83.753428, 9.748916999999999],
+                    'Cuba': [-77.781167, 21.521757],
+                    'Northern Cyprus': [33.429859, 35.126413],
+                    'Cyprus': [33.429859, 35.126413],
+                    'Czech Republic': [15.472962, 49.81749199999999],
+                    'Germany': [10.451526, 51.165691],
+                    'Djibouti': [42.590275, 11.825138],
+                    'Denmark': [9.501785, 56.26392],
+                    'Dominican Republic': [-70.162651, 18.735693],
+                    'Algeria': [1.659626, 28.033886],
+                    'Ecuador': [-78.18340599999999, -1.831239],
+                    'Egypt': [30.802498, 26.820553],
+                    'Eritrea': [39.782334, 15.179384],
+                    'Spain': [-3.74922, 40.46366700000001],
+                    'Estonia': [25.013607, 58.595272],
+                    'Ethiopia': [40.489673, 9.1450000000000001],
+                    'Finland': [25.748151, 61.92410999999999],
+                    'Fiji': [178.065032, -17.713371],
+                    'Falkland Islands': [-59.523613, -51.796253],
+                    'France': [2.213749, 46.227638],
+                    'Gabon': [11.609444, -0.803689],
+                    'United Kingdom': [-3.435973, 55.378051],
+                    'Georgia': [-82.9000751, 32.1656221],
+                    'Ghana': [-1.023194, 7.946527],
+                    'Guinea': [-9.696645, 9.945587],
+                    'Gambia': [-15.310139, 13.443182],
+                    'Guinea-Bissau': [-15.180413, 11.803749],
+                    'Equatorial Guinea': [10.267895, 1.650801],
+                    'Greece': [21.824312, 39.074208],
+                    'Greenland': [-42.604303, 71.706936],
+                    'Guatemala': [-90.230758999999999, 15.783471],
+                    'French Guiana': [-53.125782, 3.933889],
+                    'Guyana': [-58.93018, 4.860416],
+                    'Honduras': [-86.241905, 15.199999],
+                    'Croatia': [15.2, 45.1],
+                    'Haiti': [-72.285215, 18.971187],
+                    'Hungary': [19.503304, 47.162494],
+                    'Indonesia': [113.921327, -0.789275],
+                    'Ireland': [-8.24389, 53.41291],
+                    'Iran': [53.688046, 32.427908],
+                    'Iraq': [43.679291, 33.223191],
+                    'Iceland': [-19.020835, 64.963051],
+                    'Israel': [34.851612, 31.046051],
+                    'Italy': [12.56738, 41.87194],
+                    'Jamaica': [-77.297508, 18.109581],
+                    'Jordan': [36.238414, 30.585164],
+                    'Japan': [138.252924, 36.204824],
+                    'Kazakhstan': [66.923684, 48.019573],
+                    'Kenya': [37.906193, -0.023559],
+                    'Kyrgyzstan': [74.766098, 41.20438],
+                    'Cambodia': [104.990963, 12.565679],
+                    'South Korea': [127.766922, 35.907757],
+                    'Kosovo': [20.902977, 42.6026359],
+                    'Kuwait': [47.481766, 29.31166],
+                    'Laos': [102.495496, 19.85627],
+                    'Lebanon': [35.862285, 33.854721],
+                    'Liberia': [-9.429499000000002, 6.428055],
+                    'Libya': [17.228331, 26.3351],
+                    'Sri Lanka': [80.77179699999999, 7.873053999999999],
+                    'Lesotho': [28.233608, -29.609988],
+                    'Lithuania': [23.881275, 55.169438],
+                    'Luxembourg': [6.129582999999999, 49.815273],
+                    'Latvia': [24.603189, 56.879635],
+                    'Morocco': [-7.092619999999999, 31.791702],
+                    'Moldova': [28.369885, 47.411631],
+                    'Madagascar': [46.869107, -18.766947],
+                    'Mexico': [-102.552784, 23.634501],
+                    'Macedonia': [21.745275, 41.608635],
+                    'Mali': [-3.996166, 17.570692],
+                    'Myanmar': [95.956223, 21.913965],
+                    'Montenegro': [19.37439, 42.708678],
+                    'Mongolia': [103.846656, 46.862496],
+                    'Mozambique': [35.529562, -18.665695],
+                    'Mauritania': [-10.940835, 21.00789],
+                    'Malawi': [34.301525, -13.254308],
+                    'Malaysia': [101.975766, 4.210484],
+                    'Namibia': [18.49041, -22.95764],
+                    'New Caledonia': [165.618042, -20.904305],
+                    'Niger': [8.081666, 17.607789],
+                    'Nigeria': [8.675277, 9.081999],
+                    'Nicaragua': [-85.207229, 12.865416],
+                    'Netherlands': [5.2912659999999999, 52.132633],
+                    'Norway': [8.4689459999999999, 60.472023999999999],
+                    'Nepal': [84.12400799999999, 28.394857],
+                    'New Zealand': [174.885971, -40.900557],
+                    'Oman': [55.923255, 21.512583],
+                    'Pakistan': [69.34511599999999, 30.375321],
+                    'Panama': [-80.782127, 8.537981],
+                    'Peru': [-75.015152, -9.189967],
+                    'Philippines': [121.774017, 12.879721],
+                    'Papua New Guinea': [143.95555, -6.314992999999999],
+                    'Poland': [19.145136, 51.919438],
+                    'Puerto Rico': [-66.590149, 18.220833],
+                    'North Korea': [127.510093, 40.339852],
+                    'Portugal': [-8.224454, 39.39987199999999],
+                    'Paraguay': [-58.443832, -23.442503],
+                    'Qatar': [51.183884, 25.354826],
+                    'Romania': [24.96676, 45.943161],
+                    'Russia': [105.318756, 61.52401],
+                    'Rwanda': [29.873888, -1.940278],
+                    'Western Sahara': [-12.885834, 24.215527],
+                    'Saudi Arabia': [45.079162, 23.885942],
+                    'Sudan': [30.217636, 12.862807],
+                    'South Sudan': [31.3069788, 6.876991899999999],
+                    'Senegal': [-14.452362, 14.497401],
+                    'Solomon Islands': [160.156194, -9.64571],
+                    'Sierra Leone': [-11.779889, 8.460555],
+                    'El Salvador': [-88.89653, 13.794185],
+                    'Somaliland': [46.8252838, 9.411743399999999],
+                    'Somalia': [46.199616, 5.152149],
+                    'Republic of Serbia': [21.005859, 44.016521],
+                    'Suriname': [-56.027783, 3.919305],
+                    'Slovakia': [19.699024, 48.669026],
+                    'Slovenia': [14.995463, 46.151241],
+                    'Sweden': [18.643501, 60.12816100000001],
+                    'Eswatini': [31.465866, -26.522503],
+                    'Syria': [38.996815, 34.80207499999999],
+                    'Chad': [18.732207, 15.454166],
+                    'Togo': [0.824782, 8.619543],
+                    'Thailand': [100.992541, 15.870032],
+                    'Tajikistan': [71.276093, 38.861034],
+                    'Turkmenistan': [59.556278, 38.969719],
+                    'Timor-Leste': [125.727539, -8.874217],
+                    'Trinidad and Tobago': [-61.222503, 10.691803],
+                    'Tunisia': [9.537499, 33.886917],
+                    'Turkey': [35.243322, 38.963745],
+                    'United Republic of Tanzania': [34.888822, -6.369028],
+                    'Uganda': [32.290275, 1.373333],
+                    'Ukraine': [31.16558, 48.379433],
+                    'Uruguay': [-55.765835, -32.522779],
+                    'United States': [-95.712891, 37.09024],
+                    'Uzbekistan': [64.585262, 41.377491],
+                    'Venezuela': [-66.58973, 6.42375],
+                    'Vietnam': [108.277199, 14.058324],
+                    'Vanuatu': [166.959158, -15.376706],
+                    'West Bank': [35.3027226, 31.9465703],
+                    'Yemen': [48.516388, 15.552727],
+                    'South Africa': [22.937506, -30.559482],
+                    'Zambia': [27.849332, -13.133897],
+                    'Zimbabwe': [29.154857, -19.015438],
+                    'Comoros': [43.872219,-11.875001],
+                    'Indonesia': [106.515414,-6.103040],
+                    'India': [78.96288, 20.593684],
+                }
+
+                var countries=[[countries|safe]]
+                var dataList=[]
+                var dataList2=[]
+                countries.forEach(function(country){
+                    if(country in countriesLocation){
+                        var obj={
+                            name: country,
+                            value:countriesLocation[country],
+                            itemStyle:{
+                                color: '#007E7F',       //选中国家标记圆圈颜色
+                            },
+                            label:{
+                                color:'white',  //选中国家显示的名字颜色
+                                show:true,
+                                position:'right',
+                                fontSize:18,
+                                formatter:function(params){
+                                    return params.name
+                                }
+                            }
+                        }
+                        var obj2={
+                            coords:[
+                                countriesLocation[country],
+                                [104.195397, 35.86166]
+                            ]
+                        }
+                    }
+                    dataList.push(obj)
+                    dataList2.push(obj2)
+                })
+                console.log(dataList)
+                var nameList=[]
+                for(var i=0;i<countries.length;i++){
+                    var obj={
+                        name:countries[i],
+                        height:3,
+                        itemStyle: {
+                            color: '#007E7F'
+                        }
+                    };
+                    nameList.push(obj)
+                }
+                console.log(nameList);
+                
+                var myCharts = echarts.init(document.querySelector('.internationalCountries'))
+                var option={
+                    geo3D:[{
+                        name: '国际新闻发生地1',
+                        map: 'world',
+                        z:4,
+                        boxDepth:70,
+                        boxWidth:130,
+                        regionHeight:5,
+                        roam: true,
+                        itemStyle: {
+                            color:'#FAD8C8',        //地图主体颜色
+                            borderWidth:1.4,
+                            borderColor:'#C67455'
+                        },
+                        shadow:'lambert',
+                        environment: new echarts.graphic.LinearGradient(0, 0, 0, 1,[{
+                            offset: 0, color: 'rgba(0,0,0,0)' // 开始颜色
+                        }, {
+                            offset: 1
+                        }],false),
+                        light: {
+                            main: {     //主光源
+                                intensity: 1,
+                                shadow: true,
+                                alpha: 45,  //可调整地图填充颜色的亮度
+                                beta: -185  //可调节立体高度阴影程度
+                            },
+                            ambient:{     //全局环境光
+                                color:'#FFF5E3',
+                                intensity:0.4   //也可调节全局亮度
+                            }
+                        },
+                        groundPlane:{   //是否显示地面
+                            show:true,
+                            color:'rgba(0,0,0,0)',
+                        },
+                        emphasis: {
+                            label: {show: true},
+                            itemStyle:{
+                                color:'#C67455'
+                            }
+                        },
+                        label: {show: false},
+                        regions:nameList,
+                        data:countriesLocation,
+                        viewControl: {
+                            projection: 'perspective',
+                            autoRotate: false,//视角绕物体自动旋转
+                            autoRotateSpeed:3,
+                            autoRotateAfterStill:3,//鼠标静止后恢复旋转时间间隔
+                            damping: 0,//鼠标操作延迟时间
+                            rotateSensitivity: 1,//旋转
+                            rotateMouseButton: 'left', //旋转操作使用的鼠标按键
+                            zoomSensitivity:2, //缩放
+                            panSensitivity:2, //平移
+                            panMouseButton: 'right', //平移操作使用的鼠标按键
+                        
+                            beta: 0,    //以中心点为原点旋转，xy轴的旋转
+                            alpha:100,  //yz轴的旋转
+                            distance: 130, //默认视角距离主体的距离
+                            // center:[0,20,0],
+                            animation: true,
+                            animationDurationUpdate: 1000,
+                            animationEasingUpdate: 'cubicInOut'
+                        },
+                    },
+                    ],
+                    
+                    title: {
+                        text: "国际新闻发生地",
+                        top: "7%",
+                        left: 'center' ,
+                        textStyle:
+                        {
+                            color: '#4A312C',
+                            fontSize: 20
+                        }
+                    },
+                    legend:{ show:false },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: function (params) {
+                                return params.name
+                        }
+                    },
+                    series: [
+                        {
+                            type: 'scatter3D',
+                            coordinateSystem: 'geo3D',
+                            data: dataList,
+                            symbolSize: 14,
+                            hoverAnimation: true,
+                            itemStyle: {
+                                // shadowBlur: 20,
+                                // shadowColor: '#007E7F'
+                            },
+                            // zlevel: 6
+                        },{
+                            type: 'lines3D',
+                            coordinateSystem: 'geo3D',
+                            // zlevel: 5,
+                            blendMode: 'lighter',
+                            effect: {
+                                show: true,
+                                period: 4, //箭头指向速度，值越小速度越快
+                                trailLength: 0.4, //特效尾迹长度[0,1]值越大，尾迹越长重
+                                symbol: 'arrow', //箭头图标
+                                symbolSize: 7, //图标大小
+                            },
+                            lineStyle: {
+                                    color: '#005B77',
+                                    width: 3, //线条宽度
+                                    opacity: 0.8, //尾迹线条透明度
+                                    curveness: .8 //尾迹线条曲直度
+                            },
+                            data: dataList2
+                        }]
+                }
+                myCharts.setOption(option)
+            </script>
+            <div class="panel monitor" style="right:1%;top:-58px;">
+                <div class="inner">
+                    <div class="tabs">
+                        <a href="javascript:;" class="active">国内新闻</a>
+                        <a href="javascript:;">国际新闻</a>
+                    </div>
+                    <div class="content" style="display: block;">
+                        <div class="head">
+                            <span class="col">排名</span>
+                            <span class="col">标题</span>
+                            <span class="col">评论数</span>
+                        </div>
+                        <div class="marquee-view">
+                            <div class="marquee">
+                                <div class="row">
+                                    <span class="col">1</span>
+                                    <span class="col">广东梅州一13岁在校生猥亵女生 公安机关介入调查并进行训诫教育</span>
+                                    <span class="col">741,601</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+
+                                <div class="row">
+                                    <span class="col">2</span>
+                                    <span class="col">网传邯郸初中生遇害案颅骨照片不实</span>
+                                    <span class="col">544,792</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+
+                                <div class="row">
+                                    <span class="col">3</span>
+                                    <span class="col">中国外交部新任发言人林剑亮相</span>
+                                    <span class="col">16,390</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+
+                                <div class="row">
+                                    <span class="col">4</span>
+                                    <span class="col">普京胜选后表示台湾是中国一部分，外交部：高度赞赏普京总统有关表态！</span>
+                                    <span class="col">5,812</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+
+                                <div class="row">
+                                    <span class="col">5</span>
+                                    <span class="col">林剑亮相，外交部第34任发言人</span>
+                                    <span class="col">865</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+
+                                <div class="row">
+                                    <span class="col">6</span>
+                                    <span class="col">第十三届全国政协委员刘跃进接受纪律审查和监察调查</span>
+                                    <span class="col">432</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+
+                                <div class="row">
+                                    <span class="col">7</span>
+                                    <span class="col">媒体：国足26人大名单，差不多是国足的全部家底了</span>
+                                    <span class="col">200</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+
+                                <div class="row">
+                                    <span class="col">8</span>
+                                    <span class="col">一个曾登上热搜的211文科硕士，裸辞自驾游中国</span>
+                                    <span class="col">670</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+
+                                <div class="row">
+                                    <span class="col">9</span>
+                                    <span class="col">签订“阴阳合同”首次被明确列举为逃税手段 “两高”发布司法解释</span>
+                                    <span class="col">1,763</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+
+                                <div class="row">
+                                    <span class="col">10</span>
+                                    <span class="col">两名金门人员出海失联 大陆船只救起</span>
+                                    <span class="col">3,048</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+                                <div class="row">
+                                    <span class="col">1</span>
+                                    <span class="col">广东梅州一13岁在校生猥亵女生 公安机关介入调查并进行训诫教育</span>
+                                    <span class="col">741,601</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+
+                                <div class="row">
+                                    <span class="col">2</span>
+                                    <span class="col">网传邯郸初中生遇害案颅骨照片不实</span>
+                                    <span class="col">544,792</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+
+                                <div class="row">
+                                    <span class="col">3</span>
+                                    <span class="col">中国外交部新任发言人林剑亮相</span>
+                                    <span class="col">16,390</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+
+                                <div class="row">
+                                    <span class="col">4</span>
+                                    <span class="col">普京胜选后表示台湾是中国一部分，外交部：高度赞赏普京总统有关表态！</span>
+                                    <span class="col">5,812</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+
+                                <div class="row">
+                                    <span class="col">5</span>
+                                    <span class="col">林剑亮相，外交部第34任发言人</span>
+                                    <span class="col">865</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+
+                                <div class="row">
+                                    <span class="col">6</span>
+                                    <span class="col">第十三届全国政协委员刘跃进接受纪律审查和监察调查</span>
+                                    <span class="col">432</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+
+                                <div class="row">
+                                    <span class="col">7</span>
+                                    <span class="col">媒体：国足26人大名单，差不多是国足的全部家底了</span>
+                                    <span class="col">200</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+
+                                <div class="row">
+                                    <span class="col">8</span>
+                                    <span class="col">一个曾登上热搜的211文科硕士，裸辞自驾游中国</span>
+                                    <span class="col">670</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+
+                                <div class="row">
+                                    <span class="col">9</span>
+                                    <span class="col">签订“阴阳合同”首次被明确列举为逃税手段 “两高”发布司法解释</span>
+                                    <span class="col">1,763</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+
+                                <div class="row">
+                                    <span class="col">10</span>
+                                    <span class="col">两名金门人员出海失联 大陆船只救起</span>
+                                    <span class="col">3,048</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="content">
+                        <div class="head">
+                            <span class="col">排名</span>
+                            <span class="col">标题</span>
+                            <span class="col">评论数</span>
+                        </div>
+                        <div class="marquee-view">
+                            <div class="marquee">
+                                <div class="row">
+                                    <span class="col">1</span>
+                                    <span class="col">英伟达推出有2080亿晶体管的新AI处理器 运行速度可提高数倍</span>
+                                    <span class="col">5,073</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+                                <div class="row">
+                                    <span class="col">2</span>
+                                    <span class="col">奥巴马突然穿黑色西装现身唐宁街，网友猜测：与美国大选或英国王室传闻有关？</span>
+                                    <span class="col">3,245</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+                                <div class="row">
+                                    <span class="col">3</span>
+                                    <span class="col">欧盟外长博雷利：加沙是世界上最大的“露天墓地”</span>
+                                    <span class="col">669</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+                                <div class="row">
+                                    <span class="col">4</span>
+                                    <span class="col">外媒：马来西亚向中国寻求稀土合作，以开发本国矿藏</span>
+                                    <span class="col">539</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+                                <div class="row">
+                                    <span class="col">5</span>
+                                    <span class="col">马斯克私生子？肯尼亚男子网上发起众筹，“赴美认爹”</span>
+                                    <span class="col">498</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+                                <div class="row">
+                                    <span class="col">6</span>
+                                    <span class="col">外媒：阿根廷总统米莱执政百日，“休克疗法”收效甚微</span>
+                                    <span class="col">170</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+                                <div class="row">
+                                    <span class="col">7</span>
+                                    <span class="col">阿富汗对巴基斯坦空袭做出报复性打击</span>
+                                    <span class="col">133</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+                                <div class="row">
+                                    <span class="col">8</span>
+                                    <span class="col">泰国呵叻府发生旅游大巴翻车事故 已致2死43伤</span>
+                                    <span class="col">102</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+                                <div class="row">
+                                    <span class="col">9</span>
+                                    <span class="col">蓄意攻击还是“误伤”？英防相专机被干扰，“导航战”成焦点</span>
+                                    <span class="col">623</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+                                <div class="row">
+                                    <span class="col">10</span>
+                                    <span class="col">澳反“奥库斯”前总理基廷期待与王毅会晤：很高兴有机会与他讨论国际事务</span>
+                                    <span class="col">60</span>
+                                    <span class="icon-dot"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                    (function () {
+                        $(".tabs a").on("click", function (e) {
+                            e.preventDefault(); // 阻止默认的a标签跳转行为    
+                            $(this)
+                                .addClass("active")
+                                .siblings("a")
+                                .removeClass("active");
+
+                            var contentIndex = $(this).index(); // 获取当前点击的a标签的索引    
+                            $(".content")
+                                .eq(contentIndex)
+                                .show()
+                                .siblings(".content")
+                                .hide();
+                        });
+                    })();  
+            </script>
+
+        </div>
+        <div class="column">
+            <div class="overview">
+                <div class="inner">
+                    <ul>
+                        <li>
+                            <div class="data-pair">
+                                <span style="font-size: 16px;">
+                                    <i class="icon-dot" style="color: #006cff; font-size: 16px;"></i>
+                                    社会
+                                </span>
+                                <h5>收费站工作人员逼司机吃垃圾桶食物</h5>
+                            </div>
+                            <div class="data-pair">
+                                <span style="font-size: 16px;">
+                                    <i class="icon-dot" style="color: yellow;font-size: 16px;"></i>
+                                    百态
+                                </span>
+                                <h5>余干法院守护绿水青山</h5>
+                        </li>
+                        <li>
+                            <div class="data-pair">
+                                <span style="font-size: 16px;">
+                                    <i class="icon-dot" style="color: #6acca3; font-size: 16px;"></i>
+                                    案件
+                                </span>
+                                <h5>邯郸被害初中生父亲曾做最坏设想</h5>
+                            </div>
+
+                            <div class="data-pair">
+                                <span style="font-size: 16px;">
+                                    <i class="icon-dot" style="color: #ed3f35;font-size: 16px;"></i>
+                                    事故
+                                </span>
+                                <h5>出事故受伤高额医疗费成难题，8万余元救助基金解难题</h5>
+                            </div>
+
+                </div>
+                </li>
+                </ul>
+            </div>
+        </div>
+        <div class="slideshow">
+            <!-- 图片展示 -->
+            <div class="image">
+                <!-- 通过js改变src属性值替换图片 -->
+                <img src="//n.sinaimg.cn/default/1_img/upload/7a809127/1/w2048h1153/20240314/aa81-40ac80a260d42b3579486ef6a11daad4.jpg"
+                    id="img-show">
+            </div>
+            <!-- 上一张按钮 -->
+            <div class="previous" id="to-pre">❮</div>
+            <!-- 下一张按钮 -->
+            <div class="next" id="to-next">❯</div>
+            <!-- 自由选择小圆点 -->
+            <div class="dots" id="dot-container">
+                <!-- 小圆点由 js 动态生成 -->
+            </div>
+        </div>
+        <script>
+            const images = ['//n.sinaimg.cn/default/1_img/upload/7a809127/1/w2048h1153/20240314/aa81-40ac80a260d42b3579486ef6a11daad4.jpg', '//n.sinaimg.cn/default/1_img/upload/7a809127/213/w2048h1365/20240314/6467-629b339010cbe84517d91f68d1df99ab.jpg', '//n.sinaimg.cn/default/1_img/upload/7a809127/69/w2048h1221/20240314/b997-28a827d3a00f7ade09e9a82c0b015a7e.jpg', '//n.sinaimg.cn/default/1_img/upload/7a809127/213/w2048h1365/20240314/cebf-aae6978c144ff76e4cbf1f8ba1c4123e.jpg', '//n.sinaimg.cn/default/1_img/upload/7a809127/213/w2048h1365/20240314/2ddb-15d5d19037c7ef2d5082db343b591f91.jpg', '//n.sinaimg.cn/sports/2_img/upload/cf0d0fdd/107/w1024h683/20200907/0486-iytwsca6539018.jpg'];
+            let imgNow = 0;
+            let t;
+
+            let dotContainer = document.getElementById("dot-container");
+            for (let i = 0; i < images.length; i++) {
+                let dot = document.createElement("span");
+                dot.className = "dot";
+                dot.id = "dot" + i;
+                dot.addEventListener("click", function () {
+                    clearTimeout(t);
+                    dotID = this.getAttribute("id");
+                    imgNow = Number(dotID.replace("dot", ""));
+                    document.getElementById("img-show").src = images[imgNow];
+                    for (let i = 0; i < dots.length; i++) {
+                        dots[i].className = "dot";
+                    }
+                    this.className = "dot selected";
+                    t = setTimeout(() => { timer(); }, 1000 * 2);
+                });
+                dotContainer.appendChild(dot);
+            }
+            let defaultDot = document.getElementById("dot0").className = "dot selected";
+
+            let dots = document.getElementsByClassName("dot");
+
+            t = setTimeout(() => {
+                timer();
+            }, 1000 * 2);
+
+            document.getElementById("img-show").addEventListener("mouseover", function () {
+                clearTimeout(t);
+            });
+            document.getElementById("img-show").addEventListener("mouseout", function () {
+                t = setTimeout(() => { timer(); }, 1000 * 2);
+            });
+
+            let previous = document.getElementById("to-pre");
+            previous.addEventListener("click", function () {
+                clearTimeout(t);
+                changeImage(true);
+                t = setTimeout(() => { timer(); }, 1000 * 2);
+            });
+            let next = document.getElementById("to-next");
+            next.addEventListener("click", function () {
+                clearTimeout(t);
+                changeImage(false);
+                t = setTimeout(() => { timer(); }, 1000 * 2);
+            });
+
+            function timer() {
+                changeImage(false);
+                t = setTimeout(() => { timer(); }, 1000 * 2);
+            }
+
+
+            function changeImage(direction) {
+                for (let i = 0; i < dots.length; i++) {
+                    dots[i].className = "dot";
+                }
+                if (direction) {
+                    if (imgNow == 0) {
+                        imgNow = images.length - 1;
+                    } else {
+                        imgNow -= 1;
+                    }
+                    document.getElementById("img-show").src = images[imgNow];
+                    dots[imgNow].className = "dot selected";
+                } else {
+                    if (imgNow == images.length - 1) {
+                        imgNow = 0;
+                    } else {
+                        imgNow += 1;
+                    }
+                    document.getElementById("img-show").src = images[imgNow];
+                    dots[imgNow].className = "dot selected";
+                }
+            }
+        </script>
+        <div class="pl3D"
+            style="height: 250px;width: 260px;top:394px;right:21%;background-color: rgba(255, 255, 255, 0.2);border-radius: 20px; /* 设置圆角大小 */ ">
+        </div>
+        <script>
+            var ptitles = [[ptitles | safe]]
+            var pnum = [[pnum | safe]]
+            pnum = pnum.map(str => parseFloat(str));
+
+            var dataList = []
+            for (var i = 0; i < 5; i++) {
+                dataList[i] = [ptitles[i], 1, pnum[i]]
+            }
+
+            var myCharts = echarts.init(document.querySelector('.pl3D'))
+            var option = {
+                tooltip: {
+                    formatter: function (params) {
+                        return params.value[0];
+                    }
+                },
+                 title: {
+                    text: "热点新闻",
+                    top: "5%",
+                    left: 'center' ,
+                    textStyle:
+                    {
+                        color: '#4A312C',
+                        fontSize: 16
+                    }
+                },
+                xAxis3D: {
+                    name: '',
+                    type: 'category',
+                    data: ptitles.slice(0, 5),
+                    splitLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        show: true,
+                        interval: 0,
+                        textStyle: {
+                            rotate: 15,
+                            fontSize: 16,
+                            color: '#900'
+                        }
+                    },
+                    axisTick: {
+                        show: false
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#0F0',
+                            width: 0
+                        }
+                    },
+                },
+                yAxis3D: {
+                    name: '',
+                    type: 'category',
+                    data: [''],
+                    splitLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        show: false
+                    },
+                    axisTick: {
+                        show: false
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#0F0',
+                            width: 0
+                        }
+                    },
+                },
+                zAxis3D: {
+                    name: '',
+                    type: 'value',
+                    splitLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        show: false
+                    },
+                    axisTick: {
+                        show: false
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#0F0',
+                            width: 0
+                        }
+                    },
+                },
+                grid3D: {
+                    // width:350,
+                    // height:250,
+                    boxHeight: 200,
+                    boxWidth: 220,
+                    boxDepth: 200,
+                    axisPointer: {
+                        show: false
+                    },
+                    light: {
+                        main: {
+                            intensity: 1.2
+                        },
+                        ambient: {
+                            intensity: 0.3
+                        }
+                    },
+                    viewControl: {
+                        // alpha: 5,
+                        // beta: 0,
+                        autoRotate: true,
+                        zoomSensitivity: 0,
+                        autoRotateAfterStill: 15,
+                        distance: 250
+                    },
+                },
+
+                series: [{
+                    type: 'bar3D',
+                    name: dataList.map(function (item) {
+                        return {
+                            name: item[0]
+                        }
+                    }),
+                    data: dataList.map(function (item) {
+                        return {
+                            value: [item[0], item[1], item[2]]
+                        }
+                    }),
+                    itemStyle: {
+                        color: function (params) {
+                            var colorList = [
+                                '#A94235', '#B8754E', '#DFB06A', '#FAD8C8', '#E7D5AD', "#a00398", '#E87C25', '#C6E579',
+                            ];
+                            return colorList[params.dataIndex]
+                        }
+                    },
+                    barSize: [20, 20],
+                    shading: 'lambert',
+                    label: {
+                        show: true,
+                        distance: 10,
+                        textStyle: {
+                            fontSize: 16
+                        }
+                    },
+                    emphasis: {
+                        label: {
+                            textStyle: {
+                                fontSize: 20,
+                                color: '#900'
+                            }
+                        },
+                        itemStyle: {
+                            color: '#900'
+                        }
+                    }
+                }]
+            }
+            myCharts.setOption(option)
+        </script>
+    </div>
+
+    </div>
+
+</body>
+
+
+</html>

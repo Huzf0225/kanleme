@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>热点新闻</title>
+   <script src="https://cdn.jsdelivr.net/npm/echarts@5.2.1/dist/echarts.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden; /* 禁止滚动 */
+        }
+
+        .index-box {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            background-color: #f5f5f5;
+            padding: 10px 0;
+             z-index: 999;
+        }
+
+        .index-item {
+            width: 20%;
+            text-align: center;
+            background-color: #fff;
+            color: #333;
+            cursor: pointer;
+            border: none;
+        }
+
+        .selected {
+            background-color: #56b8c1;
+            color: white;
+        }
+
+        .back-button {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            padding: 10px 20px;
+            background-color: #56b8c1;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            /* 添加圆角 */
+            text-align: center;
+            /* 文本居中 */
+            font-size: 16px;
+            /* 字体大小 */
+            z-index: 999;
+            /* 确保按钮在页面其他元素之上 */
+        }
+        
+    </style>
+</head>
+
+
+<body>
+    <button class="back-button" onclick="location.href='index.html'">返回首页</button>
+    <div class="index-box">
+        <button class="index-item " onclick="recordClick('politics','political.html')">政治新闻</button>
+        <button class="index-item " onclick="recordClick('technology','economy.html')">财经新闻</button>
+        <button class="index-item" onclick="recordClick('finance', 'tech.html')">科技新闻</button>
+        <button class="index-item selected" onclick="recordClick('sports','hotTopics.html')">热点新闻</button>
+    </div>
+     <script>
+        function recordClick(category, pageUrl) {
+            var currentCount = parseInt(localStorage.getItem(category)) || 0;
+            currentCount++;
+            localStorage.setItem(category, currentCount);
+            window.location.href = pageUrl + '?clickCount=' + currentCount;
+        }
+    </script>
+    <div class='hotTopics' style="height: 709px;width: 1300px;top: 38px;"></div>
+    <script>
+        var titles=[[titles|safe]]
+        var urls=[[urls|safe]]
+        var size=[143,132,128,123,119,114,107,100,98,97,96,96,91,91,91,
+                  88,,85,85,82,79,78,73,73,71,70,69,69,66,66,63,63,62,60,
+                  60,54,53,53,53,50,50,47,46,46,42,40]
+        
+        var colorList = [
+            '#ff7f50', '#87cefa', '#da70d6', '#32cd32', '#6495ed',
+            '#ff69b4', '#ba55d3', '#cd5c5c', '#ffa500', '#40e0d0',
+            '#1e90ff', '#ff6347', '#7b68ee', '#d0648a', '#ffd700',
+            '#6b8e23', '#4ea397', '#3cb371', '#b8860b', '#7bd9a5']
+        
+        var dataList=[]
+        for (var i = 0; i < 45; i++) {
+            var obj = {
+                id:i,
+                url:urls[i],
+                name: titles[i],
+                symbolSize: size[i],
+                draggable: true,
+                itemStyle: {
+                        shadowBlur: 10,
+                        shadowColor: colorList[i % colorList.length],
+                        color: colorList[i % colorList.length]
+                },
+               
+            };
+            dataList.push(obj);
+        };
+        console.log(dataList[0]);
+        var myCharts = echarts.init(document.querySelector('.hotTopics'))
+        var option = {
+            // 图表标题
+            title: {
+                show:true,
+                text: '新浪热搜话题',
+                x: 'center',
+                top:'3%',
+                backgroundColor: 'rgba(240, 248, 255, 0)',
+                borderColor: '#dddddd',    // 标题边框颜色
+                borderWidth: 0,         // 标题边框线宽，单位px，默认为0（无边框）
+                padding: 5,             // 标题内边距，单位px，默认各方向内边距为5
+                textStyle: {
+                    fontSize: 22,
+                    fontWeight: 'bolder',
+                    color: '#333333'        // 主标题文字颜色
+                }
+            },
+            backgroundColor: '#f0f8ff',
+            tooltip: {},
+            animationDurationUpdate: function(idx) {
+                return idx * 100;
+            },
+            animationEasingUpdate: 'bounceIn',
+            color: ['#ff7f50', '#87cefa', '#da70d6', '#32cd32', '#6495ed',
+            '#ff69b4', '#7b68ee', '#d0648a', '#ffd700',
+            '#6b8e23', '#4ea397', '#3cb371', '#b8860b', '#7bd9a5'],
+            series: [{
+                type: 'graph',
+                layout: 'force',
+                force: {
+                    repulsion: 300,
+                    edgeLength: 10
+                },
+                roam: true,
+                label: {
+                    show: true,
+                    positon:"inside",
+                    fontSize:14,
+                    width:130,
+                    overflow:'break'                 
+                },
+                data:dataList
+                }]
+            }
+        myCharts.setOption(option) 
+        myCharts.on('click',function(e){
+            window.open(e.data.url)
+        })
+    </script>
+   
+
+</body>
+
+</html>

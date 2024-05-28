@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/pre.css" />
+
+    <title>用户偏好统计</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .back-button-container {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 999;
+        }
+
+        .back-button {
+            display: block;
+            margin-bottom: 10px;
+            /* 间隔两个按钮 */
+            padding: 10px 20px;
+            background-color: #5886f0;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            text-decoration: none;
+            border: none;
+        }
+
+        /* 最后一个按钮不需要下边距 */
+        .back-button-container .back-button:last-child {
+            margin-bottom: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            /* 可选，水平居中 */
+            align-items: center;
+            /* 可选，垂直居中 */
+            width: 69%;
+            /* 设置容器宽度为页面宽度的50% */
+
+        }
+
+        .pcount,
+        .tcount,
+        .fcount,
+        .precount {
+            flex: 0 0 calc(50% - 10px);
+            /* 每个div占据50%的宽度减去间隙 */
+            margin: 3px;
+            /* 间隙 */
+            background-color: #f2f2f2;
+            /* 可选，为了更清晰地看到边界 */
+        }
+
+        .flex-container {
+            display: flex;
+            justify-content: flex-start;
+            /* 水平对齐方式 */
+            background-color: #f2f2f2;
+            width: 895px;
+        }
+
+        .flex-item {
+            background-color: #f2f2f2;
+            box-sizing: border-box;
+            /* 包括padding和border在元素的总宽度内 */
+
+        }
+
+        .count {
+            flex: 0 0 auto;
+            /* 保持默认宽度，不伸缩 */
+            height: 250px;
+            width: 600px;
+            background-color: #f2f2f2;
+            margin-top: 10px;
+        }
+
+        .word {
+            flex: 0 0 auto;
+            position: absolute;
+            /* 使用绝对定位 */
+            top: 50px;
+            left: 50%;
+
+        }
+        #clearbutton {  
+        position: fixed;   
+        top: 10px;  
+        left: 820px;   
+        z-index: 999;  
+        display: inline-block;  
+        padding: 5px 10px;  
+        font-size: 14px;  
+        color: #fff;  
+        background-color: #5886f0;   
+        border: none;  
+        border-radius: 5px;  
+        cursor: pointer; /* 鼠标悬停时变为小手 */  
+        transition: background-color 0.3s ease;  
+    }  
+    </style>
+    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+    <script src="/static/js/echarts-liquidfill.min.js"></script>
+</head>
+
+<body>
+    <div class="back-button-container">
+        <button onclick="location.href='index.html'" class="back-button">返回首页</button>
+        <button onclick="window.history.back()" class="back-button">返回上页</button>
+    </div>
+    <button id="clearbutton">刷新</button>
+    <script>
+        document.getElementById('clearbutton').addEventListener('click', function() { localStorage.removeItem('politics'); localStorage.removeItem('technology'); localStorage.removeItem('finance'); localStorage.removeItem('sports'); document.getElementById('politicsCount').textContent = 0; document.getElementById('technologyCount').textContent = 0; document.getElementById('financeCount').textContent = 0; document.getElementById('sportsCount').textContent = 0; });
+    </script>
+    <div class="big">
+        <div class="flex-container">
+            <div class="flex-item">
+                <div class='count'></div>
+            </div>
+            <div class="flex-item">
+                <div class="word">
+                    <p>政治新闻点击次数： <span id="politicsCount"></span></p>
+                    <p>科技新闻点击次数： <span id="technologyCount"></span></p>
+                    <p>财经新闻点击次数： <span id="financeCount"></span></p>
+                    <p>热点新闻点击次数： <span id="sportsCount"></span></p>
+                </div>
+            </div>
+
+        </div>
+        <h3>
+            <div class="title" style="height:5px;text-align: center;padding-right: 400px;margin-top:-10px;">新闻点击次数百分比
+            </div>
+        </h3>
+
+        <div class="container">
+            <div class="pcount" style="height: 200px;width: 200px;"></div>
+            <div class="tcount" style="height: 200px;width: 200px;"></div>
+            <div class="fcount" style="height: 200px;width: 200px;"></div>
+            <div class="precount" style="height: 200px;width: 200px;"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('politicsCount').textContent = localStorage.getItem('politics') || 0;
+        document.getElementById('technologyCount').textContent = localStorage.getItem('technology') || 0;
+        document.getElementById('financeCount').textContent = localStorage.getItem('finance') || 0;
+        document.getElementById('sportsCount').textContent = localStorage.getItem('sports') || 0;
+
+        var p = parseInt(document.getElementById('politicsCount').textContent);
+        var t = parseInt(document.getElementById('technologyCount').textContent);
+        var f = parseInt(document.getElementById('financeCount').textContent);
+        var pre = parseInt(document.getElementById('sportsCount').textContent);
+
+        pcount = p / (p + t + f + pre)
+        pcount = Number((pcount * 100).toFixed(1))
+        tcount = t / (p + t + f + pre)
+        tcount = Number((tcount * 100).toFixed(1))
+        fcount = f / (p + t + f + pre)
+        fcount = Number((fcount * 100).toFixed(1))
+        precount = pre / (p + t + f + pre)
+        precount = Number((precount * 100).toFixed(1))
+        console.log(precount)
+
+        var myCharts = echarts.init(document.querySelector('.count'))
+        option = {
+            color: ["#63caff", "#49beff", "rgb(2,47,87)", "rgb(2,47,87)"],
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { // 坐标轴指示器，坐标轴触发有效
+                    type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+                },
+                textStyle: {
+                    fontSize: 18,
+                },
+                formatter: (params) => {
+                    return params.name;
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: ["政治", "科技", "经济", "热点"],
+                splitLine: {
+                    show: false,
+                },
+                axisLabel: {
+                    color: "#A1BADF",
+                    fontSize: 20,
+                    interval: 'auto', // x轴间距
+                    // rotate:40
+                },
+                axisTick: {
+                    show: false
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: 'rgba(152, 212, 255, .1)',
+                    }
+                },
+            },
+            yAxis: [{
+                type: 'value',
+                name: "点击数",
+                nameGap: '30',
+                min: 0,
+                axisTick: {
+                    show: false
+                },
+                axisLabel: {
+                    show: true,
+                    fontSize: 24,
+                    color: "#A1BADF",
+                },
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: 'rgba(152, 212, 255, .1)',
+                    }
+                },
+                splitLine: {
+                    lineStyle: {
+                        color: 'rgba(152, 212, 255, .1)',
+                    }
+                },
+                nameTextStyle: {
+                    color: "#A1BADF",
+                    fontWeight: 400,
+                    fontSize: 24,
+                },
+            }, {
+                type: 'value',
+                name: "%",
+                nameGap: '30',
+                nameTextStyle: {
+                    color: "#A1BADF",
+                    fontWeight: 400,
+                    fontSize: 24,
+                },
+                axisTick: {
+                    show: false
+                },
+                axisLabel: {
+                    show: true,
+                    fontSize: 24,
+                    color: "#A1BADF",
+                },
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: 'rgba(152, 212, 255, .1)',
+                    }
+                },
+                splitLine: {
+                    lineStyle: {
+                        color: 'rgba(152, 212, 255, .1)',
+                    }
+                },
+            }],
+            series: [{
+                data: [p, t, f, pre],
+                type: "bar", // 柱图
+                barMaxWidth: "auto",
+                barWidth: 40,
+                itemStyle: {
+                    color: {
+                        x: 0,
+                        y: 0,
+                        x2: 0,
+                        y2: 1,
+                        type: "linear",
+                        global: false,
+                        colorStops: [{
+                            offset: 0,
+                            color: "#2A76FF"
+                        }, {
+                            offset: 0.5,
+                            color: "#00A8FF"
+                        }, {
+                            offset: 1,
+                            color: "#00D8FF"
+                        }]
+                    }
+                }
+            }, {
+                data: [1, 1, 1, 1],
+                type: "pictorialBar", // 底部
+                barMaxWidth: "20",
+                symbolOffset: [0, "50%"],
+                symbolSize: [40, 15]
+            }, {
+                data: [p, t, f, pre],
+                type: "pictorialBar",  // 顶部
+                barMaxWidth: "20",
+                symbolPosition: "end",
+                symbolOffset: [0, "-50%"],
+                symbolSize: [40, 12],
+                // zlevel: 2
+            }, {
+                name: '',
+                type: 'line',
+                showAllSymbol: true,
+                lineStyle: {
+                    color: "#00D8FF"
+                },
+                showSymbol: true,
+                symbol: 'circle',
+                symbolSize: 20,
+                itemStyle: {
+                    normal: {
+                        color: "#121E43",
+                        borderColor: '#00D8FF',
+                        borderWidth: 3
+                    }
+
+                },
+                data: [pcount, tcount, fcount, precount],
+                yAxisIndex: 1,
+            }]
+        };
+        myCharts.setOption(option)
+    </script>
+    <script>
+        var p = parseInt(document.getElementById('politicsCount').textContent);
+        var t = parseInt(document.getElementById('technologyCount').textContent);
+        var f = parseInt(document.getElementById('financeCount').textContent);
+        var pre = parseInt(document.getElementById('sportsCount').textContent);
+
+        pcount = p / (p + t + f + pre);
+        console.log(pcount);
+        tcount = t / (p + t + f + pre)
+        fcount = f / (p + t + f + pre)
+        precount = pre / (p + t + f + pre)
+
+    if(isNaN(pcount))
+            pcount=0;
+    if(isNaN(tcount))
+            tcount=0;
+    if(isNaN(fcount))
+            fcount=0;
+    if(isNaN(precount))
+            precount=0;
+
+        var labelList = []
+        var obj = {
+            formatter: Number((pcount * 100).toFixed(1)) + '%',
+            textStyle: {
+                fontSize: 40,
+            },
+        }
+        labelList.push(obj);
+        var obj = {
+            formatter: Number((tcount * 100).toFixed(1)) + '%',
+            textStyle: {
+                fontSize: 40,
+            },
+        };
+        labelList.push(obj);
+        var obj = {
+            formatter: Number((fcount * 100).toFixed(1)) + '%',
+            textStyle: {
+                fontSize: 40,
+            },
+        };
+        labelList.push(obj);
+        var obj = {
+            formatter: Number((precount * 100).toFixed(1)) + '%',
+            textStyle: {
+                fontSize: 40,
+            },
+        };
+        labelList.push(obj);
+        console.log(labelList);
+
+        var waveList = [pcount, tcount, fcount, precount]
+
+        var myCharts0 = echarts.init(document.querySelector('.pcount'))
+        var myCharts1 = echarts.init(document.querySelector('.tcount'))
+        var myCharts2 = echarts.init(document.querySelector('.fcount'))
+        var myCharts3 = echarts.init(document.querySelector('.precount'))
+        function makeOption(count, klabel, ktitle1, ktitle2) {
+            return {
+                title: [{
+                    text: ktitle1,
+                    top: '30%',
+                    left: '10%',
+                    textStyle: {
+                        fontSize: 78,
+                        color: '#5886f0',
+                        fontFamily: 'ziti'
+                    }
+                }, {
+                    text: ktitle2,
+                    top: '30%',
+                    left: '70%',
+                    textStyle: {
+                        fontSize: 78,
+                        color: '#5886f0',
+                        fontFamily: 'ziti'
+                    }
+                }],
+                series: [
+                    {
+                        type: 'liquidFill',
+                        radius: '60%',
+                        center: ['50%', '50%'],
+                        data: [count, count, count], // data个数代表波浪数
+                        backgroundStyle: {
+                            borderWidth: 1,
+                            color: 'rgb(255,0,255,0.1)',
+                        },
+                        label: klabel,
+                        outline: {
+                            show: false,
+                        },
+                    },
+                    {
+                        type: 'pie',
+                        center: ['50%', '50%'],
+                        radius: ['65%', '67%'],
+                        hoverAnimation: false,
+                        data: [
+                            {
+                                name: '',
+                                value: 500,
+                                labelLine: {
+                                    show: false,
+                                },
+                                itemStyle: {
+                                    color: '#5886f0',
+                                },
+                                emphasis: {
+                                    labelLine: {
+                                        show: false,
+                                    },
+                                    itemStyle: {
+                                        color: '#5886f0',
+                                    },
+                                },
+                            },
+                            {
+                                //画中间的图标
+                                name: '',
+                                value: 4,
+                                labelLine: {
+                                    show: false,
+                                },
+                                itemStyle: {
+                                    color: '#ffffff',
+                                    normal: {
+                                        color: '#5886f0',
+                                        borderColor: '#5886f0',
+                                        borderWidth: 20,
+                                        // borderRadius: '100%'
+                                    },
+                                },
+                                label: {
+                                    borderRadius: '100%',
+                                },
+                                emphasis: {
+                                    labelLine: {
+                                        show: false,
+                                    },
+                                    itemStyle: {
+                                        color: '#5886f0',
+                                    },
+                                },
+                            },
+                            {
+                                // 解决圆点过大后续部分显示明显的问题
+                                name: '',
+                                value: 4,
+                                labelLine: {
+                                    show: false,
+                                },
+                                itemStyle: {
+                                    color: '#5886f0',
+                                },
+                                emphasis: {
+                                    labelLine: {
+                                        show: false,
+                                    },
+                                    itemStyle: {
+                                        color: '#5886f0',
+                                    },
+                                },
+                            }
+                        ],
+                    },
+                ],
+            }
+        }
+        myCharts0.setOption(makeOption(pcount, labelList[0], '政', '治'));
+        myCharts1.setOption(makeOption(tcount, labelList[1], '科', '技'));
+        myCharts2.setOption(makeOption(fcount, labelList[2], '财', '经'));
+        myCharts3.setOption(makeOption(precount, labelList[3], '偏', '好'));
+
+    </script>
+    <div class="panel monitor">
+        <div class="inner">
+            <div class="tabs">
+                <a class="active">新闻热榜</a>
+            </div>
+            <div class="content" style="display: block;">
+                <div class="head">
+                    <span class="col">排名</span>
+                    <span class="col">标题</span>
+                    <span class="col">热度</span>
+                </div>
+                <div id="marquee-container" class="marquee-view">
+                    <div class="marquee">
+
+                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const csvFilePath = '../data/Political news/plt_Sina_hot_rank30.csv';
+                            fetch(csvFilePath)
+                                .then(response => response.text())
+                                .then(data => {
+                                    const rows = data.split('\n').slice(1);
+                                    const marquee = document.querySelector('.marquee');
+                                    marquee.innerHTML = ''; // Clear existing content
+
+                                    rows.forEach((row, index) => {
+                                        const columns = row.split(',');
+                                        const div = document.createElement('div');
+                                        div.className = 'row';
+
+                                        columns.forEach((col) => {
+                                            const span = document.createElement('span');
+                                            span.className = 'col';
+                                            span.textContent = col.trim();
+                                            div.appendChild(span);
+                                        });
+
+                                        const dotSpan = document.createElement('span');
+                                        dotSpan.className = 'icon-dot';
+                                        div.appendChild(dotSpan);
+
+                                        marquee.appendChild(div);
+                                    });
+                                })
+                                .catch(error => {
+                                    console.error('Error loading the CSV file:', error);
+                                });
+                        });
+
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</body>
+
+</html>

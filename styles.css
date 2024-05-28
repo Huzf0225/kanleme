@@ -1,0 +1,355 @@
+/*清除元素默认的内外边距  */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/*让所有斜体 不倾斜*/
+em,
+i {
+    font-style: normal;
+}
+
+/*去掉列表前面的小点*/
+li {
+    list-style: none;
+}
+
+/*图片没有边框   去掉图片底侧的空白缝隙*/
+img {
+    border: 0;
+    /*ie6*/
+    vertical-align: middle;
+}
+
+/*让button 按钮 变成小手*/
+button {
+    cursor: pointer;
+}
+
+/*取消链接的下划线*/
+a {
+    color: #666;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #e33333;
+}
+
+h4 {
+    font-weight: 400;
+}
+
+body {
+    background: url(../images/zz2.jpg);
+    background-repeat: no-repeat;
+    /* 图片不重复 */
+    background-size: cover;
+    /* 图片覆盖整个背景 */
+    background-attachment: fixed;
+    /* 背景图片固定，不随页面滚动 */
+}
+
+/* // 实现rem适配 */
+@media screen and (max-width: 1024px) {
+    html {
+        font-size: 42.66px !important;
+    }
+}
+
+@media screen and (min-width: 1920px) {
+    html {
+        font-size: 80px !important;
+    }
+}
+
+.viewport {
+    display: flex;
+    min-width: 1024px;
+    max-width: 1920px;
+    margin: 0 auto;
+    padding: 0.2rem 0.25rem 0;
+    min-height: 1024px;
+}
+
+.viewport .column {
+    flex: 3;
+}
+
+.viewport .column:nth-child(2) {
+    flex: 4;
+    margin: 0.4rem 0.25rem 0;
+}
+
+/* 公共面板样式  */
+.panel {
+    position: relative;
+    border: 15px solid transparent;
+    border-width: 0.6375rem 0.475rem 0.25rem 1.65rem;
+
+    border-image-slice: 51 38 20 132;
+    margin-bottom: 0.25rem;
+}
+
+.inner {
+    position: absolute;
+    top: -0.6375rem;
+    left: -1.65rem;
+    right: -0.475rem;
+    bottom: -0.25rem;
+    padding: 0.3rem 0.45rem;
+}
+
+.panel h3 {
+    font-size: 0.25rem;
+    color: #fff;
+    font-weight: 400;
+}
+
+
+/* 监控区域模块制作 */
+.monitor {
+    height: 13.2rem;
+    width: 90%;
+    top: -23px;
+    z-index: 900;
+}
+
+.monitor .inner {
+    padding: 0.3rem 0;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(124, 47, 47, 0.261);
+
+}
+
+.monitor .tabs {
+    padding: 0 0.45rem;
+    margin-bottom: 0.225rem;
+    display: flex;
+}
+
+.monitor .tabs a {
+    color: #E7D5AD;
+    font-size: 0.825rem;
+    padding: 0 0.3375rem;
+}
+
+.monitor .tabs a:first-child {
+    padding-left: 0;
+    border-right: 0.025rem solid #f28d00;
+}
+
+.monitor .tabs a.active {
+    color: #C0201A;
+}
+
+.monitor .content {
+    flex: 1;
+    position: relative;
+    display: none;
+}
+
+.monitor .head {
+    display: flex;
+    justify-content: space-between;
+    line-height: 1.55;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0.15rem 0.55rem;
+    color: #C0201A;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    /* 防止文本换行 */
+    overflow: hidden;
+    /* 隐藏超出容器的文本 */
+}
+
+.monitor .marquee-view {
+    position: absolute;
+    top: 1.75rem;
+    bottom: 0;
+    width: 100%;
+    overflow: hidden;
+}
+
+.monitor .row {
+    display: flex;
+    justify-content: space-between;
+    line-height: 1.55;
+    font-size: 0.75rem;
+    color: #fcfdfe;
+    padding: 0.15rem 1.7rem;
+    overflow: hidden;
+}
+
+.monitor .row .icon-dot {
+    position: absolute;
+    left: 0.2rem;
+    opacity: 0;
+}
+
+.monitor .row:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #E7D5AD;
+}
+
+.monitor .row:hover .icon-dot {
+    opacity: 1;
+}
+
+.monitor .col:first-child {
+    width: 1rem;
+}
+
+.monitor .col:nth-child(2) {
+    width: 20rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.monitor .col:nth-child(3) {
+    width: 3rem;
+}
+
+/* 通过CSS3动画滚动marquee */
+.marquee-view .marquee {
+    animation: move 15s linear infinite;
+}
+
+@keyframes move {
+    0% {}
+
+    100% {
+        transform: translateY(-50%);
+    }
+}
+
+/* 3.鼠标经过marquee 就停止动画 */
+.marquee-view .marquee:hover {
+    animation-play-state: paused;
+}
+
+/* 概览区域模块 */
+
+.overview {
+    height: 2rem;
+    position: relative;
+    width: 200px;
+    top: 45px;
+    right: 24%;
+}
+
+.overview ul {
+    display: flex;
+    justify-content: space-between;
+}
+
+.overview ul li h4 {
+    font-size: 0.35rem;
+    color: #fff;
+    margin: 0 0 0.1rem 0.06rem;
+}
+
+.overview ul li span {
+    font-size: 0.2rem;
+    color: #4c9bfd;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 大容器实现水平垂直居中 */
+.slideshow {
+    position: absolute;
+    /* 绝对定位 */
+    top: 48%;
+    /* 向下偏移窗口高度的50% */
+    left: 89%;
+    width: 260px;
+    /* 
+    由于上面的偏移位置是由当前元素的左上角决定，注释下面一句代码查看会发生什么问题，
+    下面这句代码是以当前元素的宽高向上向左移动50%，联合上面的偏移实现水平垂直居中。
+    */
+    transform: translate(-50%, -50%);
+}
+
+.slideshow .image {
+    width: 100%;
+}
+
+.slideshow .image>img {
+    display: block;
+    /* 去除图片底部的空白 */
+    width: 100%;
+    /* 让图片的宽始终的等于父元素的宽 */
+}
+
+
+/* 切换按钮 */
+.slideshow .previous,
+.slideshow .next {
+    position: absolute;
+    /* 下面两句实现切换按钮垂直居中 */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    margin-left: 5px;
+    border-radius: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    font: 700 20px/2 "Arial";
+    color: white;
+    text-align: center;
+}
+
+.slideshow .next {
+    right: 5px;
+    /* 将下一张按钮移到右边 */
+}
+
+.slideshow .previous:hover,
+.slideshow .next:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+
+/* 放置小圆点的容器，不给它设置宽度，让它可以动态添加小圆点 */
+.slideshow .dots {
+    position: absolute;
+    bottom: 20px;
+    /* 从底部向上偏移20px */
+    /* 下面两句让小圆点容器实现水平居中 */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.slideshow .dots:hover {
+    cursor: pointer;
+}
+
+/* 小圆点样式 */
+.dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin: 0px 4px;
+    border-radius: 8px;
+    background-color: white;
+}
+
+.dot:hover {
+    cursor: pointer;
+    background-color: rgb(72, 72, 72);
+}
+
+/* 小圆点对应的图片被展示时，小圆点变灰 */
+.dots .selected {
+    background-color: rgb(72, 72, 72);
+}

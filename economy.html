@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>财经新闻</title>
+    <link rel="stylesheet" href="/static/css/icomoon.css" />
+    <link rel="stylesheet" href="/static/css/money.css" />
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.2.1/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.1/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts-gl@2/dist/echarts-gl.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+           overflow: hidden;
+        }
+
+        header {
+            position: relative;
+            top: 2.1875rem;
+            height: 3.0rem;
+            background: url('../static/images/head_bg4 .png') no-repeat top center;
+            background-size: 100% 100%;
+
+            h1 {
+                font-size: 1.275rem;
+                color: #fff;
+                text-align: center;
+                line-height: 3rem;
+            }
+
+            .showTime {
+                position: absolute;
+                top: 0.6rem;
+                right: 0.675rem;
+                line-height: 1rem;
+                font-size: 1rem;
+                color: rgba(255, 255, 255, 0.7);
+            }
+        }
+
+        .index-box {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            background-color: #f5f5f5;
+            padding: 10px 0;
+            z-index: 999;
+        }
+
+        .index-item {
+            width: 20%;
+            text-align: center;
+            background-color: #fff;
+            color: #333;
+            cursor: pointer;
+            border: none;
+        }
+
+        .selected {
+            background-color: #f6b833;
+            color: white;
+        }
+
+        .back-button {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            padding: 10px 20px;
+            background-color: #f6b833eb;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            /* 添加圆角 */
+            text-align: center;
+            /* 文本居中 */
+            font-size: 16px;
+            /* 字体大小 */
+            z-index: 999;
+            /* 确保按钮在页面其他元素之上 */
+        }
+
+
+        .hotstocks {
+            width: 20.625rem;
+             height: 12.5rem;
+             top: 1.25rem;
+            left: 15%;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+         }
+
+        .infloat {
+             width: 21.875rem;
+            height: 9.375rem;
+            left: 12%;
+            top: 1.25rem;
+            
+            
+         }
+
+        .stockMarketOverview {
+            height: 16.25rem;
+             width: 21.875rem;
+             top: 5.625rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+         }
+
+             .adRate {
+                position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            /* 水平居中 */
+            height: 14.375rem;
+             width: 28.125rem;
+             top: 3.75rem;
+             
+         }
+
+        .stockMarket {
+            width: 20.75rem;
+             height: 20.875rem;
+             top: 1.25rem;
+             left: 14%;
+             background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+        }
+
+         .Ad3D {
+             position: absolute;
+            left: 50%;
+            top: 5.4375rem;
+            transform: translateX(-50%);
+            width: 48.875rem;
+            height: 44.75rem;
+         }
+    </style>
+</head>
+
+<body>
+    <button class="back-button" onclick="location.href='index.html'">返回首页</button>
+    <div class="index-box">
+        <button class="index-item " onclick="recordClick('politics','political.html')">政治新闻</button>
+        <button class="index-item selected" onclick="recordClick('finance','economy.html')">财经新闻</button>
+        <button class="index-item" onclick="recordClick('technology', 'tech.html')">科技新闻</button>
+        <button class="index-item " onclick="recordClick('sports','hotTopics.html')">热点新闻</button>
+    </div>
+    <script>
+        function recordClick(category, pageUrl) {
+            var currentCount = parseInt(localStorage.getItem(category)) || 0;
+            currentCount++;
+            localStorage.setItem(category, currentCount);
+            window.location.href = pageUrl + '?clickCount=' + currentCount;
+        }
+    </script>
+    <header>
+        <h1>财经新闻 · Economy</h1>
+        <div class="showTime"> </div>
+        <script>
+            var t = null;
+            t = setTimeout(time, 1000);//開始运行
+            function time() {
+                clearTimeout(t);//清除定时器
+                dt = new Date();
+                var y = dt.getFullYear();
+                var mt = dt.getMonth() + 1;
+                var day = dt.getDate();
+                var h = dt.getHours();//获取时
+                var m = dt.getMinutes();//获取分
+                var s = dt.getSeconds();//获取秒
+                document.querySelector(".showTime").innerHTML = '当前时间：' + y + "年" + mt + "月" + day + "日" + h + "时" + m + "分" + s + "秒";
+                t = setTimeout(time, 1000); //设定定时器，循环运行     
+            }
+        </script>
+    </header>
+
+    <div class="viewport">
+        <div class="column">
+            <div class="panel overview">
+                <div class="inner">
+                    <ul>
+                        <li>
+                            <h2>2865.90</h2>
+                            <h5>36.21|1.28%</h5>
+                            <span style="font-size: 16px;">
+                                <i class="icon-dot" style="color: #006cff; font-size: 16px;"></i>
+                                上证指数
+                            </span>
+                        </li>
+                        <li class="item">
+                            <h2>8820.60</h2>
+                            <h5>1112.36|1.29%</h5>
+                            <span style="font-size: 16px;">
+                                <i class="icon-dot" style="color: #6acca3; font-size: 16px;"></i>
+                                深证成指
+                            </span>
+                        </li>
+                        <li>
+                            <h2>5083.68</h2>
+                            <h5>183.29|3.74%</h5>
+                            <span style="font-size: 16px;">
+                                <i class="icon-dot" style="color: #ed3f35;font-size: 16px;"></i>
+                                大数据100
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="gold" style="height: 15.625rem;width: 21.875rem;top:5.25rem;background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;"></div>
+            <div class="stockMarketOverview"></div>
+        </div>
+        <div class="column">
+            
+            <div class="adRate"></div>
+            <div class="Ad3D"></div>
+
+        </div>
+        <div class="column">
+            <div class="hotstocks"></div>
+            <div class="infloat"></div>
+            <div class="stockMarket"></div>
+        </div>
+    </div>
+    <script>
+        var sectors = [[sectors | safe]]
+        var adRate = [[adRate | safe]]
+        adRate = adRate.map(str => parseFloat(str));
+        var stocks = [[stocks | safe]]
+
+        var dataList = []
+        for (var i = 0; i < sectors.length; i++) {
+            dataList[i] = [sectors[i], stocks[i], adRate[i]]
+        }
+        console.log(dataList);
+
+        var myCharts = echarts.init(document.querySelector('.Ad3D'))
+        option = {
+            tooltip: {
+                faomatter: function (params) {
+                    return '板块：' + params[1] + '\n领新股：' + params[0] + '\n涨跌幅：' + params[2];
+                }
+            },
+            xAxis3D: {
+                type: 'category',
+                data: sectors,
+                axisLabel: {
+                    interval: 0
+                }
+            },
+            yAxis3D: {
+                type: 'category',
+                data: stocks,
+                axisLabel: {
+                    interval: 0
+                }
+            },
+            zAxis3D: {
+                type: 'value'
+            },
+            grid3D: {
+                boxHeight: 60,
+                boxWidth: 80,
+                boxDepth: 80,
+                light: {
+                    main: {
+                        intensity: 1.2
+                    },
+                    ambient: {
+                        intensity: 0.3
+                    }
+                }
+            },
+            series: [{
+                type: 'bar3D',
+                data: dataList.map(function (item) {
+                    console.log([item[1], item[0], item[2]]);
+                    return {
+                        value: [item[0], item[1], item[2]]
+                    }
+                }),
+                shading: 'color',
+
+                label: {
+                    show: true,
+                    textStyle: {
+                        fontSize: 14
+                    }
+                },
+                itemStyle: {
+                    opacity: 0.8,
+                    color: function (params) {
+                        var colorList = [
+                            "rgb(255, 128, 0)", "rgb(255, 165, 0)", "rgb(255, 191, 0)", "rgb(255, 215, 0)", "rgb(255, 232, 71)", "rgb(180, 220, 0)", 'rgb(155, 235, 50)', 'rgb(130, 250, 100)', 'rgb(105, 255, 150)', 'rgb(80, 255, 200)'
+                        ];
+                        return colorList[params.dataIndex]
+                    }
+                },
+
+                emphasis: {
+                    label: {
+                        textStyle: {
+                            fontSize: 20,
+                            color: '#FFB898'
+                        }
+                    },
+                    itemStyle: {
+                        color: '#FFB898'
+                    }
+                }
+            }]
+        }
+        myCharts.setOption(option) 
+    </script>
+    <script>
+        overnames = [[overnames | safe]]
+        overrise = [[overrise | safe]]
+        overrise = overrise.map(str => parseFloat(str))
+        overflat = [[overflat | safe]]
+        overflat = overflat.map(str => parseFloat(str))
+        overfell = [[overfell | safe]]
+        overfell = overfell.map(str => parseFloat(str))
+
+        var myCharts = echarts.init(document.querySelector('.stockMarketOverview'))
+        var option = {
+            title:{
+                text:"股票",
+                left:"5%",
+                top:"3%",
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            legend: {
+                top: '10%',
+                data: ['上涨', '持平', '下跌']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'value',
+                axisLine: { show: false },
+                axisLabel: { show: false },
+                axisTick: { show: false },
+                splitLine: { show: false },
+            },
+            yAxis: {
+                type: 'category',
+                data: overnames,
+                inverse: true
+            },
+            series: [
+                {
+                    name: '上涨',
+                    color: '#ed825f',
+                    type: 'bar',
+                    barWidth: 35,
+                    stack: 'total',
+                    label: {
+                        show: true
+                    },
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    data: overrise
+                },
+                {
+                    name: '持平',
+                    color: 'rgba(119,153,184,0.8)',
+                    type: 'bar',
+                    stack: 'total',
+                    label: {
+                        show: true
+                    },
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    data: overflat
+                },
+                {
+                    name: '下跌',
+                    color: 'rgba(101,193,125,0.8)',
+                    type: 'bar',
+                    stack: 'total',
+                    label: {
+                        show: true
+                    },
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    data: overfell
+                }
+            ]
+        }
+        myCharts.setOption(option)
+    </script>
+    <script>
+        var infsectors = [[infsectors | safe]]
+        var IFRate = [[IFRate | safe]]
+        IFRate = IFRate.map(str => parseFloat(str));
+        var IFAmount = [[IFAmount | safe]];
+        console.log(IFRate);
+
+        var dataList = []
+        for (var i = 0; i < 5; i++) {
+            var obj = {
+                name: infsectors[i]
+            }
+            dataList.push(obj)
+        }
+        for (var i = 0; i < 5; i++) {
+            var obj = {
+                name: IFRate[i].toString()
+            }
+            dataList.push(obj)
+        }
+        for (var i = 0; i < 5; i++) {
+            var obj = {
+                name: IFAmount[i]
+            }
+            dataList.push(obj)
+        }
+
+        console.log(dataList);
+
+        var linksList = []
+        for (var i = 0; i < 5; i++) {
+            var obj = {
+                source: infsectors[i],
+                target: IFRate[i].toString(),
+                value: IFRate[i],
+            }
+            linksList.push(obj)
+        }
+        for (var i = 0; i < 5; i++) {
+            var obj = {
+                source: IFRate[i].toString(),
+                target: IFAmount[i],
+                value: parseInt(IFAmount[i]),
+            }
+            linksList.push(obj)
+        }
+        console.log(linksList);
+
+        var myCharts = echarts.init(document.querySelector('.infloat'))
+        var option = {
+            title:{
+                text:'资金流入',
+                left:"6%",
+                top:"3%"
+            },
+            tooltip: {
+                trigger: 'item',
+                triggerOn: 'mousemove'
+            },
+            dataZoom: [
+                {
+                    type: "inside"
+                }
+            ],
+            series: [
+                {
+                    type: 'sankey',
+                    top:"20%",
+                    nodeAlign: 'left',
+                    data: dataList,
+                    links: linksList,
+                    emphasis: {
+                        focus: 'adjacency'
+                    },
+                    levels: [
+                        {
+                            depth: 0,
+                            itemStyle: {
+                                color: '#ed825f'
+                            },
+                            lineStyle: {
+                                color: 'source',
+                                opacity: 0.6
+                            }
+                        },
+                        {
+                            depth: 1,
+                            itemStyle: {
+                                color: 'RGBA(114, 135, 184,0.8)'
+                            },
+                            lineStyle: {
+                                color: 'source',
+                                opacity: 0.6
+                            }
+                        },
+                        {
+                            depth: 2,
+                            itemStyle: {
+                                color: 'rgba(101,193,125,0.8)'
+                            },
+                            lineStyle: {
+                                color: 'source',
+                                opacity: 0.6
+                            }
+                        }
+                    ],
+                    lineStyle: {
+                        curveness: 0.5
+                    }
+                }]
+        }
+        myCharts.setOption(option)
+    </script>
+    <script>
+        var stonames = [[stonames | safe]]
+        var stoprice = [[stoprice | safe]]
+        stoprice = stoprice.map(str => parseFloat(str));
+        console.log(stoprice)
+        var stoadAmount = [[stoadAmount | safe]]
+        stoadAmount = stoadAmount.map(str => parseFloat(str));
+        var stoadRate = [[stoadRate | safe]]
+        stoadRate = stoadRate.map(str => parseFloat(str));
+
+        var option = {
+            title:{
+                text:'全球股市行情',
+                left:"3%",
+                top:"3%"
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                },
+            },
+            grid: {
+                top: '20%',
+                right: '1%',
+                containLabel: true
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    splitLine: { show: false },
+                    axisLine: {
+                        show: false
+                    },
+                    axisTick: {
+                        show: false,
+                        alignWithLabel: true
+                    },
+                    axisLabel: {
+                        interval: 0,
+                        rotate: 20
+                    },
+                    data: [stonames[0], stonames[1], stonames[2], stonames[3], stonames[4], stonames[5]]
+                }
+            ],
+            yAxis: [
+                {
+                    show: true,
+                    type: 'value',
+                    name: '最新价',
+                    position: 'left',
+                    alignTicks: true,
+                    splitLine: { show: false },
+                    axisLine: {
+                        show: false
+                    },
+                    axisTick: {
+                        show: false,
+                        alignWithLabel: true
+                    },
+                    axisLabel: {
+                        show: true,
+                        formatter: '{value}'
+                    }
+                },
+                {
+                    type: 'value',
+                    name: '涨跌幅',
+                    position: 'right',
+                    alignTicks: true,
+                    axisLine: {
+                        show: false
+                    },
+                    axisTick: {
+                        show: false
+                    },
+                    axisLabel: {
+                        show: true,
+                        formatter: '{value} %'
+                    }
+                },
+
+            ],
+            series: [
+                {
+                    name: '价格',
+                    type: 'line',
+                    color: '#7287B8',        //折线图线的颜色
+                    z: 10,
+                    yAxisIndex: 0,
+                    areaStyle: {
+                        normal: {       //折线图下方面积（现在是渐变色，所有渐变色都是这样写的，从上到下的渐变）
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                offset: 0,      //最上方的颜色
+                                color: 'rgba(108,80,243,0.3)'
+                            },
+                            {
+                                offset: 1,      //最下方的颜色
+                                color: 'rgba(108,80,243,0)'
+                            }
+                            ], false),
+                            shadowColor: 'rgba(108,80,243, 0.9)',
+                            shadowBlur: 20
+                        }
+                    },
+                    data: [stoprice[0], stoprice[1], stoprice[2], stoprice[3], stoprice[4], stoprice[5]]
+                },
+                {
+                    name: '涨跌幅',
+                    type: 'bar',
+                    barWidth: '20px',
+                    barGap: '-100%',
+                    z: 12,
+                    yAxisIndex: 1,
+                    itemStyle: {
+                        color: function (params) {     //每个柱形都是渐变
+                            if (params.value > 0)      //数值大于零时的渐变
+                                return new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                    offset: 0,
+                                    color: 'rgba(237,130,95,0.8)'
+                                },
+                                {
+                                    offset: 1,
+                                    color: 'rgba(108,80,243,0.3)'
+                                }
+                                ], false);
+                            else if (params.value < 0)     //数值小于零时的渐变
+                                return new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                    offset: 0,
+                                    color: 'rgba(101,193,125,0.8)'
+                                },
+                                {
+                                    offset: 0.5,
+                                    color: 'rgba(101,193,125,0.5)'
+                                },
+                                {
+                                    offset: 1,
+                                    color: 'rgba(101,193,125,0.3)'
+                                }
+                                ], false);
+                            else
+                                return new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                    offset: 0,
+                                    color: 'rgba(255,215,109,0.6)'
+                                },
+                                {
+                                    offset: 1,
+                                    color: 'rgba(255,215,109,0.3)'
+                                }
+                                ], false);
+                        },
+                        barBorderRadius: [30, 30, 30, 30]
+                    },
+                    label: {
+                        show: true,
+                        lineHeight: 15,
+                        width: 60,
+                        height: 15,
+                        backgroundColor: 'rgba(108,80,243,0)',        //柱形上方标签背景原边矩形的颜色
+                        borderRadius: 200,
+                        // position: ['-8', '-60'],
+                        position: 'top',
+                        distance: 10,
+                        formatter: [
+                            ' {a|{c}}     \n'
+                        ].join(' '),
+                        rich: {
+                            a: {
+                                color: '#7287B8',      //标签文本颜色
+                                align: 'center',
+                            }
+                        }
+                    },
+                    data: [stoadRate[0], stoadRate[1], stoadRate[2], stoadRate[3], stoadRate[4], stoadRate[5]]
+                },
+            ]
+        };
+
+        var Europe = [stonames[0], stonames[1], stonames[2], stonames[3], stonames[4], stonames[5]]
+        var dataEurope1 = [stoprice[0], stoprice[1], stoprice[2], stoprice[3], stoprice[4], stoprice[5]]
+        var dataEurope2 = [stoadRate[0], stoadRate[1], stoadRate[2], stoadRate[3], stoadRate[4], stoadRate[5]]
+        var Americas = [stonames[6], stonames[7], stonames[8], stonames[9], stonames[10], stonames[11]]
+        var dataAmericas1 = [stoprice[6], stoprice[7], stoprice[8], stoprice[9], stoprice[10], stoprice[11]]
+        var dataAmericas2 = [stoadRate[6], stoadRate[7], stoadRate[8], stoadRate[9], stoadRate[10], stoadRate[11]]
+        var Asia = [stonames[12], stonames[13], stonames[14], stonames[15], stonames[16], stonames[17]]
+        var dataAsia1 = [stoprice[12], stoprice[13], stoprice[14], stoprice[15], stoprice[16], stoprice[17]]
+        var dataAsia2 = [stoadRate[12], stoadRate[13], stoadRate[14], stoadRate[15], stoadRate[16], stoadRate[17]]
+        var Australia = [stonames[18], stonames[19]]
+        var dataAustralia1 = [stoprice[18], stoprice[19]]
+        var dataAustralia2 = [stoadRate[18], stoadRate[19]]
+        var Africa = [stonames[20], stonames[21]]
+        var dataAfrica1 = [stoprice[20], stoprice[21]]
+        var dataAfrica2 = [stoadRate[20], stoadRate[21]]
+
+
+        var chartData = [
+            { name: Europe, data1: dataEurope1, data2: dataEurope2 },
+            { name: Americas, data1: dataAmericas1, data2: dataAmericas2 },
+            { name: Asia, data1: dataAsia1, data2: dataAsia2 },
+            { name: Australia, data1: dataAustralia1, data2: dataAustralia2 },
+            { name: Africa, data1: dataAfrica1, data2: dataAfrica2 }
+        ];
+        var currentIndex = 0;
+
+        var myCharts1 = echarts.init(document.querySelector('.stockMarket'))
+        myCharts1.setOption(option)
+        
+        function carouselCharts() {
+            console.log(chartData[currentIndex])
+            myCharts1.setOption({
+                xAxis: {
+                    data: chartData[currentIndex].name
+                },
+                series: [
+                    {
+                        data: chartData[currentIndex].data1
+                    }, {
+                        data: chartData[currentIndex].data2
+                    }
+                ]
+            });
+            console.log(currentIndex)
+            currentIndex = (currentIndex + 1) % chartData.length;
+        }
+        setInterval(carouselCharts, 6000);
+        
+    </script>
+    <script>
+        var glastocks = [[glastocks | safe]]
+        var glaprice = [[glaprice | safe]]
+        glaprice = glaprice.map(str => parseFloat(str));
+        var glaadRate = [[glaadRate | safe]]
+        glaadRate = glaadRate.map(str => parseFloat(str));
+        console.log(glastocks);
+
+        var myCharts = echarts.init(document.querySelector('.hotstocks'))
+        var option = {
+            title:[{
+                text:"热门股票",
+                left:"2%",
+                top:"3%",
+            },{
+                text:'Top1:'+'\n\n'+glastocks[0]+'\n\n'+'价格：'+glaprice[0]+'\n\n'+'涨跌幅：'+glaadRate[0]+'%',
+                left:"1%",
+                top:"33%",
+                textStyle: {
+                    fontSize: 11,
+                    fontWeight: '400'
+                }
+            },{
+                text:'Top2:'+'\n\n'+glastocks[1]+'\n\n'+'价格：'+glaprice[1]+'\n\n'+'涨跌幅：'+glaadRate[1]+'%',
+                left:"78%",
+                top:"33%",
+                textStyle: {
+                    fontSize: 11,
+                    fontWeight: '400'
+                }
+            }],
+            animationDurationUpdate: 1500,
+            animationEasingUpdate: 'quinticInOut',
+            series: [
+                {
+                    type: 'graph',
+                    layout: 'force',
+
+                    force: {
+                        repulsion: 35
+                    },
+                    data: [
+                        {
+                            name: glaadRate[0],
+                            value: glaprice[0],
+                            symbolSize: [70, 70]
+                        }, {
+                            name: glaadRate[1],
+                            value: glaprice[1],
+                            draggable: true,
+                            symbolSize: [60, 60]
+                        }, {
+                            name: glaadRate[2],
+                            value: glaprice[2],
+                            draggable: true,
+                            symbolSize: [55, 55]
+                        }, {
+                            name: glaadRate[3],
+                            value: glaprice[3],
+                            draggable: true,
+                            symbolSize: [50, 50]
+                        }, {
+                            name: glaadRate[4],
+                            value: glaprice[4],
+                            draggable: true,
+                            symbolSize: [45, 45]
+                        }, {
+                            name: glaadRate[5],
+                            value: glaprice[5],
+                            draggable: true,
+                            symbolSize: [40, 40]
+                        }, {
+                            name: glaadRate[6],
+                            value: glaprice[6],
+                            draggable: true,
+                            symbolSize: [35, 35]
+                        }, {
+                            name: glaadRate[7],
+                            value: glaprice[7],
+                            draggable: true,
+                            symbolSize: [30, 30]
+                        }, {
+                            name: glaadRate[8],
+                            value: glaprice[8],
+                            draggable: true,
+                            symbolSize: [25, 25]
+                        }, {
+                            name: glaadRate[9],
+                            value: glaprice[9],
+                            draggable: true,
+                            symbolSize: [20, 20]
+                        }
+                    ],
+                    itemStyle: {
+                        color: function (params) {
+                            if (params.name > 0)
+                                return '#ed825f';
+                            else if (params.name < 0)
+                                return 'rgb(98,193,159)';
+                            else
+                                return 'rgb(245,191,106)';
+                        },
+                        shadowBlur: 10,
+                    },
+                    roam: true,
+                    label: {
+                        show: true,
+                        position: 'inside',
+                        formatter: function (params) {
+                            return glastocks[params.dataIndex];
+                        }
+                    },
+                    emphasis: {
+                        focus: 'self'
+                    }
+                }],
+            tooltip: {
+                show: true,
+                formatter: function (params) {
+                    return glastocks[params.dataIndex] + '<br>价格： ' + params.value + '<br>涨跌幅： ' + params.name;
+                },
+            }
+        }
+        myCharts.setOption(option)
+    </script>
+    <script>
+            var sectors=[[sectors|safe]]
+            var adRate=[[adRate|safe]]
+            adRate= adRate.map(str => parseFloat(str));
+            var stocks=[[stocks|safe]]   
+
+            var lineStyleList=[]
+            var k;
+            for(var i=0;i<3;i++){
+                if(adRate[i]>=40){
+                    k=1;
+                }
+                else{
+                    k=adRate[i]/40
+                }
+                var obj={
+                    width: 10,
+                    color: [
+                        [k, '#E18E6C'],
+                        [1, 'rgba(255,255,255,0.4)']
+                    ],
+                    shadowBlur:8,
+                    shadowColor:'rgba(255,255,255)'
+                }
+                lineStyleList.push(obj)
+            }
+            console.log(lineStyleList);
+
+            var myCharts=echarts.init(document.querySelector('.adRate'))
+            var option={
+                    title:[{
+                        text:sectors[0]+'\n'+sectors[1]+'\n'+sectors[2],
+                        left:"11%",
+                        top:"75%",
+                        textStyle: {
+                            fontSize: 16,
+                            fontWeight: '400',
+                            color: '#E18E6C' 
+                        }
+                    },{
+                        text:stocks[0]+'\n'+stocks[1]+'\n'+stocks[2],
+                        left:"35%",
+                        top:"75%",
+                        fontSize:10,
+                        textStyle: {
+                            fontSize: 16,
+                            fontWeight: '400',
+                            color: '#E18E6C' 
+                        }
+                    },{
+                        text:adRate[0]+'%'+'\n'+adRate[1]+'%'+'\n'+adRate[2]+'%',
+                        left:"75%",
+                        top:"75%",
+                        textStyle: {
+                            fontSize: 16,
+                            fontWeight: '400',
+                            color: '#E18E6C' 
+                        }
+                    }],
+                    tooltip:{
+                        trigger:'item'
+                    },
+                    series: [
+                    {
+                        color: '#E18E6C',//left
+                        type: 'gauge',
+                        startAngle: 210,
+                        endAngle: -30,
+                        min: 0,
+                        max: 40,
+                        radius:'45%',
+                        center:['20%','55%'],
+                        splitNumber: 4,
+                        axisLine: { // 坐标轴线
+                        lineStyle: lineStyleList[1],
+                        backgroundColor: "none"
+                },
+                        tooltip:{
+                            formatter:function(params){
+                                console.log(params);
+                                return "板块： "+params.name;
+                            }
+                        },
+                        axisTick: { // 坐标轴
+                            length: 8, 
+                            distance: 6,
+                            lineStyle: { 
+                                color: '#E18E6C'        //细长分割线（最小刻度）
+                                }
+                        },
+                        splitLine: { // 分隔线
+                            length: 6, 
+                            distance: 5 ,
+                            lineStyle: { 
+                                color: '#E18E6C'        //短粗分割线
+                            }
+                        },
+                        axisLabel: {
+                            show:false,
+                            borderRadius: 1,
+                            distance: 20,
+                            color: '#E18E6C',       //刻度盘刻度数字颜色
+                            padding: 1,
+                        },
+                        itemStyle: {
+                            color: '#E18E6C'        //刻度盘指针颜色
+                        },
+                        title: {
+                            fontSize: 18,
+                            fontWeight:'bold',
+                            fontColor: "#E18E6C",
+                            color: "#E18E6C",       //板块文本颜色
+                            paddingTop: 13,
+                            offsetCenter: [0, '65%']
+                        },
+                        detail: {
+                            shadowOffsetX: 0,
+                            shadowOffsetY: 0,
+                            textShadowBlur: 1,
+                            textShadowColor: '#E18E6C',     //百分比文本阴影颜色
+                            textShadowOffsetX: 0,
+                            textShadowOffsetY: 0,
+                            paddingTop: 10,
+                            fontFamily: 'digital',
+                            fontSize: 9,
+                            width: 15,
+                            color: '#E18E6C',       //百分比文本颜色
+                            rich: {},
+                            offsetCenter: [0, '25%'],
+                            itemStyle:{
+                                borderWidth:100,
+                                borderColor:"#9EB1D3"       //文本边颜色
+                            },
+                            formatter: function(value) {
+                                return value+ "%";
+                            }
+                        },
+                        data: [
+                            {
+                                value:adRate[1],
+                                name:sectors[1]
+                            }
+                        ]
+                    },
+                    {
+                        type: 'gauge',//right
+                        color: '#E18E6C',
+                        startAngle: 210,
+                        endAngle: -30,
+                        min: 0,
+                        max: 40,
+                        radius:'45%',
+                        center:['80%','55%'],
+                        splitNumber: 4,
+                        axisLine: { // 坐标轴线
+                        lineStyle: lineStyleList[2],
+                        backgroundColor: "none"
+                    },
+                        tooltip:{
+                            formatter:function(params){
+                                return "板块： "+params.name;
+                            }
+                        },
+                        axisTick: { // 坐标轴
+                            length: 8, 
+                            distance:6,
+                            lineStyle: { 
+                                color: '#E18E6C'
+                                }
+                        },
+                        splitLine: { // 分隔线
+                            length: 5, 
+                            distance:5,
+                            lineStyle: { 
+                                color: '#E18E6C',
+                                }
+                        },
+                        axisLabel: {
+                            show:false,
+                            borderRadius: 1,
+                            distance:20,
+                            color: '#E18E6C',
+                            padding: 1,
+                        },
+                        itemStyle: {
+                            color: '#E18E6C'
+                        },
+                        title: {
+                            fontSize: 18,
+                            fontWeight:'bold',
+                            fontColor: "#E18E6C",
+                            color: "#E18E6C",
+                            paddingTop: 10,
+                            offsetCenter: [0, '65%']
+                        },
+                        detail: {
+                            shadowOffsetX: 0,
+                            shadowOffsetY: 0,
+                            textShadowBlur: 1,
+                            textShadowColor: '#E18E6C',
+                            textShadowOffsetX: 0,
+                            textShadowOffsetY: 0,
+                            paddingTop: 13,
+                            fontFamily: 'digital',
+                            fontSize: 9,
+                            width: 15,
+                            color: '#E18E6C',
+                            rich: {},
+                            offsetCenter: [0, '25%'],
+                            formatter: function(value) {
+                                return value+ "%";
+                            }
+                        },
+                        data: [
+                            {
+                                value:adRate[2],
+                                name:sectors[2],
+                                id:stocks[2]
+                            }
+                        ]
+                    },{
+                        type: 'gauge',//middle
+                        color: '#E18E6C',
+                        startAngle: 210,
+                        endAngle: -30,
+                        min: 0,
+                        max: 40,
+                        radius:'55%',
+                        center:['50%','45%'],
+                        splitNumber: 4,
+                        axisLine: { // 坐标轴线
+                        lineStyle: lineStyleList[0],
+                        backgroundColor: "none"
+                    },
+                        tooltip:{
+                            formatter:function(params){
+                                return "板块： "+params.name;
+                            }
+                        },
+                        axisTick: { // 坐标轴
+                            length: 10, 
+                            distance:8,
+                            lineStyle: { 
+                                color: '#E18E6C'
+                            }
+                        },
+                        splitLine: { // 分隔线
+                            length: 7, 
+                            distance:7,
+                            lineStyle: { 
+                                color: '#E18E6C',
+                            }
+                        },
+                        axisLabel: {
+                            show:false,
+                            borderRadius: 1,
+                            distance:20,
+                            color: '#E18E6C',
+                            padding: 1,
+                        },
+                        itemStyle: {
+                            color: '#E18E6C'
+                        },
+                        title: {
+                            fontSize: 20,
+                            fontWeight:'bold',
+                            fontColor: "#E18E6C",
+                            color: "#E18E6C",
+                            paddingTop: 10,
+                            offsetCenter: [0, '65%']
+                        },
+                        detail: {
+                            shadowOffsetX: 0,
+                            shadowOffsetY: 0,
+                            textShadowBlur: 1,
+                            textShadowColor: '#E18E6C',
+                            textShadowOffsetX: 0,
+                            textShadowOffsetY: 0,
+                            paddingTop: 13,
+                            fontFamily: 'digital',
+                            fontSize: 15,
+                            width: 20,
+                            color: '#E18E6C',
+                            rich: {},
+                            offsetCenter: [0, '25%'],
+                            formatter: function(value) {
+                                return value+ "%";
+                            }
+                        },
+                        data: [
+                            {
+                                value:adRate[0],
+                                name:sectors[0]
+                            }
+                        ]
+                    },
+                ]
+                }
+                myCharts.setOption(option)
+    </script>
+    <script>
+        var myCharts = echarts.init(document.getElementById('gold'))
+        var labelimg = 'path://M754.384896 467.968c1.536-1.536 2.56-3.584 4.096-5.12 10.752-16.384 13.824-36.352 8.192-55.296l-61.952-213.504c-3.584-11.776-9.728-22.016-18.432-29.184l-70.656 110.592 138.752 192.512zM601.296896 262.656l68.608-108.544c-6.144-2.56-12.8-3.584-19.456-3.584H372.944896c-8.704 0-16.896 2.048-24.064 6.144l69.632 106.496h182.784zM739.536896 480.768L599.248896 282.624H420.560896l-141.824 194.56c9.216 7.168 20.48 11.264 32.256 11.264h401.408c9.728-0.512 18.944-3.072 27.136-7.68zM264.912896 462.848l138.752-187.904-70.144-107.008c-6.656 7.168-11.776 15.872-14.848 25.6L256.720896 407.04c-5.632 19.456-2.56 39.424 8.192 55.808zM1021.648896 762.368l-61.952-213.504c-3.584-11.776-9.728-22.016-18.432-29.184L870.608896 629.76l138.752 193.024c1.536-1.536 2.56-3.584 4.096-5.12 10.752-16.384 13.824-36.352 8.192-55.296zM603.856896 510.976l69.632 106.496h182.784l68.608-108.544c-6.144-2.56-12.8-3.584-19.456-3.584h-277.504c-8.704 0-16.896 2.048-24.064 5.632zM675.024896 637.952l-141.824 194.048c9.216 7.168 20.48 11.264 32.256 11.264h401.408c9.728 0 18.944-2.56 27.136-7.68l-140.288-197.632h-178.688zM587.984896 522.752c-6.656 7.168-11.776 15.872-14.848 25.6l-61.44 210.432-61.44-210.432c-3.584-11.776-9.728-22.016-18.432-29.184L362.192896 629.76l138.752 193.024c1.536-1.536 2.56-3.584 4.096-5.12 3.072-4.608 5.632-9.728 7.68-15.36 2.048 5.12 4.096 10.24 7.68 15.36l138.752-187.904-71.168-107.008zM347.344896 617.472l68.608-108.544c-6.144-2.56-12.8-3.584-19.456-3.584H119.504896c-8.704 0-16.896 2.048-24.064 6.144l69.632 106.496h182.272zM166.608896 637.952L24.784896 832c9.216 7.168 20.48 11.264 32.256 11.264h401.408c9.728 0 18.944-2.56 27.136-7.68l-140.288-197.632H166.608896zM79.568896 522.752c-6.656 7.168-11.776 15.872-14.848 25.6L2.768896 762.368c-5.632 18.944-2.56 39.424 8.192 55.296L150.224896 629.76l-70.656-107.008z'
+        var gbrands = [[gbrands | safe]]
+        var gaddition = [[gaddition | safe]]
+        var gprice = [[gprice | safe]]
+
+        function makeOption(type, symbol) {
+            return {
+                title:{
+                    text:"实时黄金报价",
+                    left:"5%",
+                    top:"3%",
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    },
+                    formatter: function (params) {
+                        var string = ' ';
+                        for (var i = 0; i < gbrands.length; i++) {
+                            if (params.name === gbrands[i]) {
+                                return gaddition[i] + '<br>' + params.data
+                            }
+                        }
+                    }
+                },
+                grid: {
+                    containLabel: true,
+                    left: 20,
+                    bottom: '10%'
+                },
+                yAxis: {
+                    boundaryGap: false,
+                    data: [gbrands[0], gbrands[1], gbrands[2], gbrands[3], gbrands[4]],
+                    inverse: true,
+                    axisLine: { show: false },
+                    axisTick: { show: false },
+                    axisLabel: {
+                        margin: 10,
+                        fontSize: 14
+                    },
+                    axisPointer: {
+                        label: {
+                            show: true,
+                            margin: 30
+                        }
+                    }
+                },
+                xAxis: {
+                    splitLine: { show: false },
+                    axisLabel: { show: false },
+                    axisTick: { show: false },
+                    axisLine: { show: false }
+                },
+                animationDurationUpdate: 500,
+                series: [
+                    {
+                        name: 'brands',
+                        id: 'bar',
+                        type: type,
+                        label: {
+                            show: true,
+                            position: 'right',
+                            offset: [3, 0],
+                            fontSize: 16
+                        },
+                        itemStyle: {
+                            color: '#FFC415',
+                            shadowBlur: 8,
+                            barBorderRadius: [5, 5, 5, 5],
+                        },
+                        symbolRepeat: true,
+                        symbolSize: ['80%', '60%'],
+                        barCategoryGap: '40%',
+                        universalTransition: {
+                            enabled: true,
+                            delay: function (idx, total) {
+                                return (idx / total) * 1000;
+                            }
+                        },
+                        itemStyle: {
+                            color: '#FFC415',
+                        },
+                        data: [
+                            {
+                                value: gprice[0],
+                                symbol: symbol || labelimg
+                            },
+                            {
+                                value: gprice[1],
+                                symbol: symbol || labelimg
+                            },
+                            {
+                                value: gprice[2],
+                                symbol: symbol || labelimg
+                            },
+                            {
+                                value: gprice[3],
+                                symbol: symbol || labelimg
+                            },
+                            {
+                                value: gprice[4],
+                                symbol: symbol || labelimg
+                            }
+                        ]
+                    }
+                ]
+            };
+        }
+        var options = [
+            makeOption('pictorialBar'),
+            makeOption('bar'),
+            makeOption('pictorialBar', 'diamond')
+        ];
+        var optionIndex = 0;
+        option = options[optionIndex];
+        setInterval(function () {
+            optionIndex = (optionIndex + 1) % options.length;
+            myCharts.setOption(options[optionIndex]);
+        }, 2500);
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,135 @@
+body {
+    background: url(../images/gold2.jpg);
+    background-repeat: no-repeat;
+    /* 图片不重复 */
+    background-size: cover;
+    /* 图片覆盖整个背景 */
+    background-attachment: fixed;
+    /* 背景图片固定，不随页面滚动 */
+}
+
+/*清除元素默认的内外边距  */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/*让所有斜体 不倾斜*/
+em,
+i {
+    font-style: normal;
+}
+
+/*去掉列表前面的小点*/
+li {
+    list-style: none;
+}
+
+/*图片没有边框   去掉图片底侧的空白缝隙*/
+img {
+    border: 0;
+    /*ie6*/
+    vertical-align: middle;
+}
+
+/*让button 按钮 变成小手*/
+button {
+    cursor: pointer;
+}
+
+/*取消链接的下划线*/
+a {
+    color: #666;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #e33333;
+}
+
+h4 {
+    font-weight: 400;
+}
+
+/* // 实现rem适配 */
+@media screen and (max-width: 1024px) {
+    html {
+        font-size: 42.66px !important;
+    }
+}
+
+@media screen and (min-width: 1920px) {
+    html {
+        font-size: 80px !important;
+    }
+}
+
+.viewport {
+    display: flex;
+    min-width: 1024px;
+    max-width: 1920px;
+    margin: 0 auto;
+    padding: 1.1rem 0.25rem 0;
+    /*background: url()no-repeat 0 0/contain;*/
+    min-height: 780px;
+}
+
+.viewport .column {
+    flex: 3;
+}
+
+.viewport .column:nth-child(2) {
+    flex: 4;
+    margin: 0.4rem 0.25rem 0;
+}
+
+/* 公共面板样式  */
+.panel {
+    position: relative;
+    border: 15px solid transparent;
+    border-width: 0.6375rem 0.475rem 0.25rem 1.65rem;
+    border-image-source: url(static\images\border.jpg);
+    border-image-slice: 51 38 20 132;
+    margin-bottom: 0.25rem;
+}
+
+.inner {
+    position: absolute;
+    top: 1rem;
+    left: -1.65rem;
+    right: -0.475rem;
+    bottom: -0.25rem;
+    padding: 0.3rem 0.45rem;
+}
+
+.panel h3 {
+    font-size: 0.25rem;
+    color: #fff;
+    font-weight: 400;
+}
+
+/* 概览区域模块制作 */
+.overview {
+    height: 1.375rem;
+    top: 0.375rem;
+    width: 21.25rem;
+    left: 1%;
+
+}
+
+.overview ul {
+    display: flex;
+    justify-content: space-between;
+}
+
+.overview ul li h4 {
+    font-size: 0.35rem;
+    color: #fff;
+    margin: 0 0 0.1rem 0.06rem;
+}
+
+.overview ul li span {
+    font-size: 0.2rem;
+    color: #4c9bfd;
+}

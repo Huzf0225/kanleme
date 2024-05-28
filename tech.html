@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科技新闻</title>
+    <link rel="stylesheet" href="/static/css/index.css" />
+<script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+    <script src="https://echarts.baidu.com/resource/echarts-gl-latest/dist/echarts-gl.min.js"></script>
+    <script src='\static\js\echarts-wordcloud.min.js'></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+         header {
+            position: relative;
+            top: 2.1875rem;
+            height: 3.0rem;
+            background: url('../static/images/head_bg5.png') no-repeat top center;
+            background-size: 100% 100%;
+
+            h1 {
+                font-size: 1.275rem;
+                color: #fff;
+                text-align: center;
+                line-height: 3rem;
+            }
+
+            .showTime {
+                position: absolute;
+                top: 0.6rem;
+                right: 0.675rem;
+                line-height: 1rem;
+                font-size: 1rem;
+                color: rgba(255, 255, 255, 0.7);
+            }
+        }
+
+        .index-box {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            background-color: #f5f5f5;
+            padding: 10px 0;
+            z-index: 999;
+        }
+
+        .index-item {
+            width: 20%;
+            text-align: center;
+            background-color: #fff;
+            color: #333;
+            cursor: pointer;
+            border: none;
+        }
+
+        .selected {
+            background-color: #1d2fd5;
+            color: white;
+        }
+
+        .back-button {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            padding: 10px 20px;
+            background-color: #1d2fd5;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            /* 添加圆角 */
+            text-align: center;
+            /* 文本居中 */
+            font-size: 16px;
+            /* 字体大小 */
+            z-index: 999;
+            /* 确保按钮在页面其他元素之上 */
+        }
+
+        
+    </style>
+</head>
+
+<body>
+    <button class="back-button" onclick="location.href='index.html'">返回首页</button>
+    <div class="index-box" id="inddexbox">
+        <button class="index-item " onclick="recordClick('politics','political.html')">政治新闻</button>
+        <button class="index-item " onclick="recordClick('finance','economy.html')">财经新闻</button>
+        <button class="index-item selected" onclick="recordClick('technology', 'tech.html')">科技新闻</button>
+        <button class="index-item " onclick="recordClick('sports','hotTopics.html')">热点新闻</button>
+    </div>
+    <script>
+        function recordClick(category, pageUrl) {
+            var currentCount = parseInt(localStorage.getItem(category)) || 0;
+            currentCount++;
+            localStorage.setItem(category, currentCount);
+            window.location.href = pageUrl + '?clickCount=' + currentCount;
+        }
+    </script>
+    <header>
+        <h1>科技新闻 · Technology</h1>
+        <div class="showTime"> </div>
+        <script>
+            var t = null;
+            t = setTimeout(time, 1000);//開始运行
+            function time() {
+                clearTimeout(t);//清除定时器
+                dt = new Date();
+                var y = dt.getFullYear();
+                var mt = dt.getMonth() + 1;
+                var day = dt.getDate();
+                var h = dt.getHours();//获取时
+                var m = dt.getMinutes();//获取分
+                var s = dt.getSeconds();//获取秒
+                document.querySelector(".showTime").innerHTML = '当前时间：' + y + "年" + mt + "月" + day + "日" + h + "时" + m + "分" + s + "秒";
+                t = setTimeout(time, 1000); //设定定时器，循环运行     
+            }
+        </script>
+    </header>
+
+    <div class="viewport">
+        <div class="column">
+            <div class="ITComments" style="height: 250px;width: 380px;top:18px;"></div>
+            <div class="carsStockMarket" style="height: 200px;width: 380px;margin-top:-45px;"></div>
+            <div class="ITAd" style="height: 320px;width: 420px;margin-top:-70px;"></div>
+        </div>
+        <div class="column">
+            <div class="Pie" style="height: 800px;width: 600px;left:-18%;top:12px;"></div>
+        </div>
+        <div class="column">
+            <div class="TechComment" style="height: 400px;width: 400px;left:-20%;top:-20px;"></div>
+             <div class="TechSankey" style="height: 300px;width: 500px;right:40%;top:-90px;"></div>
+        </div>
+    </div>
+        
+
+   
+    <script>
+        var dataList = []
+        var comtitles = [[comtitles | safe]]
+        var comcomments = [[comcomments | safe]]
+        comcomments = comcomments.map(str => parseFloat(str))
+        var sum = 0
+
+        for (var i = 0; i < comtitles.length; i++) {
+            var obj = {
+                value: comcomments[i],
+                name: comtitles[i]
+            };
+            dataList.push(obj)
+        }
+
+        var img = 'data:image/png;base64,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';
+        var color = ['#00ffff', '#00cfff', '#006ced', '#ffe000', '#ffa800', '#ff5b00', '#ff3000']
+        var data = []
+
+        for (var i = 0; i < dataList.length; i++) {
+            data.push({
+                value: dataList[i].value,
+                name: dataList[i].name,
+                itemStyle: {
+                    normal: {
+                        borderWidth: 5,
+                        shadowBlur: 20,
+                        borderColor: color[i],
+                        shadowColor: color[i]
+                    }
+                }
+            }, {
+                value: 2,
+                name: '',
+                itemStyle: {
+                    normal: {
+                        label: {
+                            show: false
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        color: 'rgba(0, 0, 0, 0)',
+                        borderColor: 'rgba(0, 0, 0, 0)',
+                        borderWidth: 0
+                    }
+                }
+            });
+        }
+        var seriesOption = [{
+            name: '',
+            type: 'pie',
+            clockWise: false,//不是顺时针排布
+            radius: [75, 79],
+            // hoverAnimation: false,鼠标悬停放大
+            itemStyle: {
+                normal: {
+                    label: {
+                        show: true,
+                        position: 'outside',//会显示视觉引导线
+                        color: '#ddd',
+                        formatter: function (params) {
+                            if (params.name !== '') {
+                                return params.name;
+                            } else {
+                                return '';
+                            }
+                        },
+                    },
+                    labelLine: {
+                        length: 10,
+                        length2: 10,
+                        show: true,
+                        color: '#00ffff'
+                    }
+                }
+            },
+            data: data
+        }];
+        option = {
+            // backgroundColor: 'rgba(0, 0, 0, 0)',
+            //backgroundColor: '#0A2E5D',
+            color: color,
+            title: {
+                text: '科技评论热榜',
+                top: '46%',//位于饼图中心空心处
+                textAlign: "center",
+                left: "49%",
+                textStyle: {
+                    color: '#fff',
+                    fontSize: 20,
+                    fontWeight: '400'
+                }
+            },
+            graphic: {
+                elements: [{
+                    type: "image",
+                    z: 3,
+                    style: {
+                        image: img,
+                        width: 110,
+                        height: 110
+                    },
+                    left: 'center',
+                    top: 'center',
+                    position: [130, 130]
+                }]
+            },
+            tooltip: {
+                show: true,
+                formatter: function (params) {
+                    return params.name;
+                }
+            },
+            toolbox: {
+                show: false
+            },
+            series: seriesOption
+        }
+
+        var myCharts = echarts.init(document.querySelector('.TechComment'));
+        myCharts.setOption(option)
+    </script>
+    
+    <script>
+        var Ititles = [[Ititles | safe]]
+        console.log(Ititles);
+        var dataList = []
+        for (var i = 0; i < Ititles.length; i++) {
+            var obj = {
+                name: Ititles
+            };
+            dataList.push(obj)
+        }
+        var color = ['#00ffff', '#00cfff', '#006ced', '#ffe000', '#ffa800', '#ff5b00', '#ff3000']
+        var myCharts = echarts.init(document.querySelector('.ITComments'));
+        var option = {
+            //backgroundColor: '#0A2E5D',
+            color: color,
+            title: {
+                text: '评论排行榜',
+                left: "center",
+                top:'5%',
+                textStyle:
+                {
+                    color: 'rgb(255,255,255,1)',
+                    fontSize: 16
+                }
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: function (params) {
+                    return params.name
+                }
+            },
+            legend: {
+                data: ['1', '2', '3', '4', '5']
+            },
+            series: [
+                {
+                    name: '评论排行榜',
+                    type: 'funnel',
+                    left: '10',
+                    right: '80',
+                    width: '40%',
+                    label: {
+                        formatter: function (params) {
+                            return params.name
+                        },
+                        fontSize: 12, borderColor: 'rgba(0,0,0,0)',
+                        borderWidth: 0
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    itemStyle: {
+                        opacity: 1
+                    },
+                    emphasis: {
+                        label: {
+                            position: 'inside',
+                            formatter: function (params) {
+                                return params.name
+                            }
+                        }
+                    },
+                    data: [
+                        { value: 30, name: Ititles[0] },
+                        { value: 10, name: Ititles[1] },
+                        { value: 5, name: Ititles[2] },
+                        { value: 50, name: Ititles[3] },
+                        { value: 80, name: Ititles[4] }
+                    ],
+                },
+                {
+                    name: 'Actual',
+                    type: 'funnel',
+                    left: '10',
+                    right: '80',
+                    width: '40%',
+                    maxSize: '80%',
+                    label: {
+                        position: 'inside',
+                        formatter: '{c}%',
+                        color: '#fff',
+                        borderColor: 'rgba(0,0,0,0)',
+                        borderWidth: 0
+                    },
+                    itemStyle: {
+                        opacity: 0.8,
+                        borderColor: 'rgba(0,0,0,0)',
+                        borderWidth: 0
+                    },
+                    emphasis: {
+                        label: {
+                            position: 'inside',
+                            formatter: function (params) {
+                                return params.name
+                            }
+                        }
+                    },
+                    data: [
+                        { value: 30, name: Ititles[0] },
+                        { value: 10, name: Ititles[1] },
+                        { value: 5, name: Ititles[2] },
+                        { value: 50, name: Ititles[3] },
+                        { value: 80, name: Ititles[4] }
+                    ],
+                    // Ensure outer shape will not be over inner shape when hover.
+                    z: 100
+                }
+            ]
+        }
+        myCharts.setOption(option)
+    </script>
+
+    <script>
+        var itnameList = []
+        var itname1 = "[[itname[0]|safe]]"
+        itnameList.push(itname1)
+        var itname2 = "[[itname[1]|safe]]"
+        itnameList.push(itname2)
+        var itname3 = "[[itname[2]|safe]]"
+        itnameList.push(itname3)
+        var itname4 = "[[itname[3]|safe]]"
+        itnameList.push(itname4)
+        var itname5 = "[[itname[4]|safe]]"
+        itnameList.push(itname5)
+        var itname6 = "[[itname[5]|safe]]"
+        itnameList.push(itname6)
+        var itname7 = "[[itname[6]|safe]]"
+        itnameList.push(itname7)
+        var itname8 = "[[itname[7]|safe]]"
+        itnameList.push(itname8)
+        var itname9 = "[[itname[8]|safe]]"
+        itnameList.push(itname9)
+        var itname10 = "[[itname[9]|safe]]"
+        itnameList.push(itname10)
+        var itname11 = "[[itname[10]|safe]]"
+        itnameList.push(itname11)
+        var itprice = [[itprice | safe]]
+        itprice = itprice.map(str => parseFloat(str))
+        var itadRate = [[itadRate | safe]]
+        itadRate = itadRate.map(str => parseFloat(str))
+        max = Math.max(...itprice)
+        var maxList = []
+        for (var i = 0; i < 11; i++) {
+            maxList.push(max)
+        }
+        var dataList = []
+        for (var i = 0; i < 11; i++) {
+            var obj = {
+                itname: itadRate[i],
+                value: itprice[i]
+            }
+            dataList.push(obj)
+        }
+
+        var option = {
+            //backgroundColor: '#031245',
+            color: [
+                '#63caff', '#49beff', '#03387a', '#03387a', '#03387a',
+                '#6c93ee', '#a9abff', '#f7a23f', '#27bae7', '#ff6d9d',
+                '#cb79ff', '#f95b5a', '#ccaf27', '#38b99c', '#93d0ff',
+                '#bd74e0', '#fd77da', '#dea700',
+            ],
+            title: {
+                text: "IT业界国际上市公司行情",
+                top: "5%",
+                left: "center",
+                textStyle:
+                {
+                    color: 'rgb(255,255,255,1)',
+                    fontSize: 16
+                }
+            },
+            xAxis: {
+                axisLabel: {
+                    color: '#c0c3cd',
+                    fontSize: 14,
+                    interval: 0,
+                    rotate: 20
+                },
+                axisTick: { show: false },
+                splitLine: { show: false },
+                axisLine: { show: false },
+                data: itnameList,
+                type: 'category',
+            },
+            yAxis: {
+                axisLabel: { show: false },
+                axisTick: { show: false },
+                splitLine: { show: false },
+                axisLine: { show: false },
+                itname: '',
+            },
+            series: [
+                {
+                    data: dataList,
+                    type: 'bar',
+                    barMaxWidth: 'auto',
+                    barWidth: 30,
+                    itemStyle: {
+                        color: {
+                            x: 0,
+                            y: 0,
+                            x2: 0,
+                            y2: 1,
+                            type: 'linear',
+                            global: false,
+                            colorStops: [
+                                {
+                                    offset: 0,
+                                    color: '#0b9eff',
+                                },
+                                {
+                                    offset: 1,
+                                    color: '#63caff',
+                                },
+                            ],
+                        },
+                    },
+                    label: {
+                        show: true,
+                        position: 'top',
+                        distance: 10,
+                        color: '#fff',
+                    },
+                },
+                {
+                    data: itprice,
+                    type: 'pictorialBar',
+                    barMaxWidth: '20',
+                    symbolPosition: 'end',
+                    symbol: 'diamond',
+                    symbolOffset: [0, '-50%'],
+                    symbolSize: [30, 12],
+                    zlevel: 2,
+                },//value值位菱形图
+                {
+                    data: maxList,
+                    type: 'bar',
+                    itemStyle: {
+                        color: 'rgba(0, 128, 255, 0.3)'
+                    },
+                    barMaxWidth: 'auto',
+                    barWidth: 30,
+                    barGap: '-100%',
+                    zlevel: -1,
+                },//最大值bar图
+                {
+                    data: maxList,
+                    type: 'pictorialBar',
+                    itemStyle: {
+                        color: 'rgba(0, 128, 255, 0.3)'
+                    },
+                    barMaxWidth: '20',
+                    symbolPosition: 'end',
+                    symbol: 'diamond',
+                    symbolOffset: [0, '-50%'],
+                    symbolSize: [30, 12],
+                    zlevel: -1,
+                },//最大值四棱柱菱形图
+            ],
+            tooltip: {
+                trigger: 'axis',
+                formatter: function (params) {
+                    return "价格    ：" + params[0].data.value + "<br>涨跌幅  : " + params[0].data.itname;
+                }
+            },
+        };
+
+
+        var myCharts = echarts.init(document.querySelector('.ITAd'));
+        // var option={
+        //     tooltip: {
+        //         trigger: 'axis',
+        //         axisPointer: {
+        //             type: 'cross'
+        //         },
+        //     },
+        //     grid: {
+        //         right: '20%'
+        //     },
+        //     toolbox: {
+        //         feature: {
+        //         dataView: { show: true, readOnly: false },
+        //         restore: { show: true },
+        //         saveAsImage: { show: true }
+        //         }
+        //     },
+        //     xAxis: {
+        //         type: 'value',
+        //         position: 'top',
+        //         splitLine: {
+        //         lineStyle: {
+        //             type: 'dashed'
+        //         }
+        //         }
+        //     },
+        //     yAxis: [
+        //         {
+        //             type: 'category',
+        //             itname: '涨跌幅',
+        //             position: 'right',
+        //             inverse:true,
+        //             alignTicks: true,
+        //             axisLine: { show: false },
+        //             axisLabel: { show: false },
+        //             axisTick: { show: false },
+        //             splitLine: { show: false },
+        //             data: itnameList
+        //         }
+        //     ],
+        //     series: [
+        //         {
+        //             itname: 'itadRate',
+        //             type: 'bar',
+        //             stack: 'Total',
+        //             data: itadRate  
+        //         }
+        //     ]
+        // };
+        myCharts.setOption(option)
+    </script>
+
+    <script>
+        var companies = [[companies | safe]]
+        var lowestPrice = [[lowestPrice | safe]]
+        lowestPrice = lowestPrice.map(str => parseFloat(str))
+        var caradRate = [[caradRate | safe]]
+        caradRate = caradRate.map(str => parseFloat(str))
+
+        var c1xAxis = companies.slice(0, 10)
+        var c2xAxis = companies.slice(10, 20)
+        var c3xAxis = companies.slice(20, 30)
+        var yAxis = ['A股', '港股', '美股']
+        var c1Data = []
+        for (var i = 0; i < 10; i++) {
+            c1Data.push([i, caradRate[i]]);
+        }
+        var c2Data = []
+        for (var i = 10; i < 20; i++) {
+            c2Data.push([i - 10, caradRate[i]]);
+        }
+        var c3Data = []
+        for (var i = 20; i < 30; i++) {
+            c3Data.push([i - 20, caradRate[i]]);
+        }
+        var myCharts = echarts.init(document.querySelector('.carsStockMarket'))
+        var option = {
+            tooltip: {
+                position: 'top'
+            },
+            title: [
+                {
+                    text: '个股行情',
+                    left: "center",
+                    top:'5%',
+                    textStyle:
+                    {
+                        color: 'rgb(255,255,255,1)',
+                        fontSize: 16
+                    }
+                },
+                {
+                    text: yAxis[0],
+                    textBaseline: 'middle',
+                    top: ((1 + 0.5) * 100) / 7 + '%',
+                    textStyle:
+                    {
+                        color: 'rgb(255,255,255,1)',
+                        fontSize: 16
+                    }
+                },
+                {
+                    text: yAxis[1],
+                    textBaseline: 'middle',
+                    top: ((2 + 0.5) * 100) / 7 + '%',
+                    textStyle:
+                    {
+                        color: 'rgb(255,255,255,1)',
+                        fontSize: 16
+                    }
+                },
+                {
+                    text: yAxis[2],
+                    textBaseline: 'middle',
+                    top: ((3 + 0.5) * 100) / 7 + '%',
+                    textStyle:
+                    {
+                        color: 'rgb(255,255,255,1)',
+                        fontSize: 16
+                    }
+                }
+            ],
+            singleAxis: [
+                {
+                    left: 80,
+                    type: 'category',
+                    boundaryGap: false,
+                    data: c1xAxis,
+                    top: (1 * 100) / 7 + 5 + '%',
+                    height: 100 / 7 - 10 + '%',
+                    nameRotate: 15,
+                    axisLabel: {
+                        rotate: 20
+                    },
+                    axisLine:{
+                        lineStyle:{
+                            color:'white'  //坐标轴线颜色，单独修改此数值，坐标数值文本也会一起修改，若要单独设置文本颜色移步axisLabel
+                        }
+                    },
+                }, {
+                    left: 80,
+                    type: 'category',
+                    boundaryGap: false,
+                    data: c2xAxis,
+                    top: (2 * 100) / 7 + 5 + '%',
+                    height: 100 / 7 - 10 + '%',
+                    axisLabel: {
+                        rotate: 20
+                    },
+                    axisLine:{
+                        lineStyle:{
+                            color:'white'  //坐标轴线颜色，单独修改此数值，坐标数值文本也会一起修改，若要单独设置文本颜色移步axisLabel
+                        }
+                    },
+                }, {
+                    left: 80,
+                    type: 'category',
+                    boundaryGap: false,
+                    data: c3xAxis,
+                    top: (3 * 100) / 7 + 5 + '%',
+                    height: 100 / 7 - 10 + '%',
+                    axisLabel: {
+                        rotate: 20,
+                        color:'white'
+                    },
+                    axisLine:{
+                        lineStyle:{
+                            color:'white'  //坐标轴线颜色，单独修改此数值，坐标数值文本也会一起修改，若要单独设置文本颜色移步axisLabel
+                        }
+                    }
+                }
+
+            ],
+            series: [
+                {
+                    singleAxisIndex: 0,
+                    coordinateSystem: 'singleAxis',
+                    type: 'scatter',
+                    data: c1Data,
+                    symbolSize: function (params) { //大小：涨跌幅
+                        return Math.abs(params[1]) * 5;
+                    },
+                    itemStyle: {
+                        color: function (params) { //颜色（红、绿）
+                            if (params.value[1] < 0)
+                                return '#FFC066';
+                            else if (params.value[1] > 0)
+                                return '#6685B3';
+                        }
+                    },
+
+                }, {
+                    singleAxisIndex: 1,
+                    coordinateSystem: 'singleAxis',
+                    type: 'scatter',
+                    data: c2Data,
+                    symbolSize: function (params) { //大小：涨跌幅
+                        return Math.abs(params[1]) * 5;
+                    },
+                    itemStyle: {
+                        color: function (params) { //颜色（红、绿）
+                            if (params.value[1] < 0)
+                                return '#FFC066';
+                            else if (params.value[1] > 0)
+                                return '#6685B3';
+                        }
+                    },
+                }, {
+                    singleAxisIndex: 2,
+                    coordinateSystem: 'singleAxis',
+                    type: 'scatter',
+                    data: c3Data,
+                    symbolSize: function (params) { //大小：涨跌幅
+                        return Math.abs(params[1]) * 5;
+                    },
+                    itemStyle: {
+                        color: function (params) { //颜色（红、绿）
+                            if (params.value[1] < 0)
+                                return '#FFC066';
+                            else if (params.value[1] > 0)
+                                return '#6685B3';
+                        }
+                    },
+                }
+            ]
+        }
+        myCharts.setOption(option)
+    </script>
+
+    
+    <script>
+        var TPstocks=[[TPstocks|safe]]
+        var TPprice=[[TPprice|safe]]
+        var TPrate=[[TPrate|safe]]
+        var colorList=['#00ffff','#00cfff','#006ced','#ffe000','#ffa800','#ff5b00','#ff3000']
+         
+        var legData=[]
+        for(var i=0;i<6;i++){
+            var obj={
+                name:TPstocks[i],
+                value:TPprice[i],
+                id:TPrate[i]
+            };
+            legData.push(obj)
+        }
+        console.log(legData);
+        var dataList=[]
+        for(var i=0;i<6;i++){
+            var obj={
+                name:TPstocks[i],
+                value:TPprice[i],
+                id:TPrate[i],
+                itemStyle:{
+                    color:colorList[i]
+                }
+            };
+            dataList.push(obj);
+        }
+        console.log(dataList);
+        
+        var myCharts = echarts.init(document.querySelector('.Pie'))
+
+        // 生成扇形的曲面参数方程，用于 series-surface.parametricEquation
+        function getParametricEquation(startRatio , endRatio , isSelected , isHovered , k , h ) {
+            // 计算
+            var midRatio = (startRatio + endRatio) / 2;
+            var startRadian = startRatio * Math.PI * 2;
+            var endRadian = endRatio * Math.PI * 2;
+            var midRadian = midRatio * Math.PI * 2;
+    
+            // 如果只有一个扇形，则不实现选中效果。
+            // if (startRatio === 0 && endRatio === 1) {
+            //     isSelected = false;
+            // }
+            isSelected = false;
+            // 通过扇形内径/外径的值，换算出辅助参数 k（默认值 1/3）
+            k = typeof k !== 'undefined' ? k : 1 / 3;
+    
+            // 计算选中效果分别在 x 轴、y 轴方向上的位移（未选中，则位移均为 0）
+            var offsetX = isSelected ? Math.sin(midRadian) * 0.1 : 0;
+            var offsetY = isSelected ? Math.cos(midRadian) * 0.1 : 0;
+    
+            // 计算高亮效果的放大比例（未高亮，则比例为 1）
+            var hoverRate = isHovered ? 1.05 : 1;
+    
+            // 返回曲面参数方程
+            return {
+                u: {
+                    min: -Math.PI,
+                    max: Math.PI * 3,
+                    step: Math.PI / 32,
+                },
+    
+                v: {
+                    min: 0,
+                    max: Math.PI * 2,
+                    step: Math.PI / 20,
+                },
+    
+                x: function (u , v ) {
+                    if (u < startRadian) {
+                        return offsetX + Math.cos(startRadian) * (1 + Math.cos(v) * k) * hoverRate;
+                    }
+                    if (u > endRadian) {
+                        return offsetX + Math.cos(endRadian) * (1 + Math.cos(v) * k) * hoverRate;
+                    }
+                    return offsetX + Math.cos(u) * (1 + Math.cos(v) * k) * hoverRate;
+                },
+    
+                y: function (u , v ) {
+                    if (u < startRadian) {
+                        return offsetY + Math.sin(startRadian) * (1 + Math.cos(v) * k) * hoverRate;
+                    }
+                    if (u > endRadian) {
+                        return offsetY + Math.sin(endRadian) * (1 + Math.cos(v) * k) * hoverRate;
+                    }
+                    return offsetY + Math.sin(u) * (1 + Math.cos(v) * k) * hoverRate;
+                },
+    
+                z: function (u , v ) {
+                    if (u < -Math.PI * 0.5) {
+                        return Math.sin(u);
+                    }
+                    if (u > Math.PI * 2.5) {
+                        return Math.sin(u) * h * 0.1;
+                    }
+                    return Math.sin(v) > 0 ? 1 * h * 0.1 : -1;
+                },
+            };
+        }
+    
+        // 生成模拟 3D 饼图的配置项
+        function getPie3D( pieData , internalDiameterRatio ) {
+            var series = [];
+            var sumValue = 0;
+            var startValue = 0;
+            var endValue = 0;
+            var legendData = [];
+            var k = typeof internalDiameterRatio !== 'undefined' ? (1 - internalDiameterRatio) / (1 + internalDiameterRatio) : 1 / 3;
+    
+            // 为每一个饼图数据，生成一个 series-surface 配置
+            for (var i = 0; i < pieData.length; i++) {
+                sumValue += pieData[i].value;
+    
+                var seriesItem  = {
+                    // name: typeof  pieData[i].name === 'undefined' ? `series${i}` :  TPprice[i].name,
+                    name:pieData[i].name,
+                    type: 'surface',
+                    parametric: true,
+                    wireframe: {
+                        show: false,
+                    },
+                    pieData:  pieData[i],
+                    pieStatus: {
+                        selected: false,
+                        hovered: false,
+                        k: 1 / 10,
+                    }
+                };
+    
+                if (typeof  pieData[i].itemStyle != 'undefined') {
+                    var itemStyle  = {};
+    
+                    typeof  pieData[i].itemStyle.color != 'undefined' ? (itemStyle.color =  pieData[i].itemStyle.color) : null;
+                    typeof  pieData[i].itemStyle.opacity != 'undefined' ? (itemStyle.opacity =  pieData[i].itemStyle.opacity) : null;
+    
+                    seriesItem.itemStyle = itemStyle;
+                }
+                series.push(seriesItem);
+                // console.log(series);
+            }
+    
+            // 使用上一次遍历时，计算出的数据和 sumValue，调用 getParametricEquation 函数，
+            // 向每个 series-surface 传入不同的参数方程 series-surface.parametricEquation，也就是实现每一个扇形。
+            for (var i = 0; i < series.length; i++) {
+                endValue = startValue + series[i]. pieData.value;
+                series[i]. pieData.startRatio = startValue / sumValue;
+                series[i]. pieData.endRatio = endValue / sumValue;
+                series[i].parametricEquation = getParametricEquation(
+                    series[i]. pieData.startRatio,
+                    series[i]. pieData.endRatio,
+                    false,
+                    false,
+                    k,
+                    series[i]. pieData.value
+                );
+                
+                startValue = endValue;
+
+                legendData.push({
+                    name: series[i].name,
+                    value:series[i].pieData.value,
+                    id:series[i].pieData.id
+                });
+                // console.log(legendData);
+                series[i].label={
+                    show: true,
+                    position: 'outside',
+                    formatter:pieData[i].name+':'+pieData[i].value
+                };
+            }
+            series.push({
+                name: 'mouseoutSeries',
+                type: 'surface',
+                
+                parametric: true,
+                wireframe: {
+                    show: false,
+                },
+                itemStyle: {
+                    opacity: 0.2,
+                    color: 'rgba(165, 247, 253, 1)',
+                },
+                labelLine: {
+                    show: true,
+                    lineStyle: {
+                        color: 'black'
+                    }
+				},
+                parametricEquation: {
+                    u: {
+                        min: 0,
+                        max: Math.PI * 2,
+                        step: Math.PI / 20,
+                    },
+                    v: {
+                        min: 0,
+                        max: Math.PI / 4,
+                        step: Math.PI / 20,
+                    },
+                    x: function (u , v ) {
+                        return ((Math.sin(v) * Math.sin(u) + Math.sin(u)) / Math.PI) * 2.5;
+                    },
+                    y: function (u , v ) {
+                        return ((Math.sin(v) * Math.cos(u) + Math.cos(u)) / Math.PI) * 2.5;
+                    },
+                    z: function (u , v ) {
+                        return Math.cos(v) > 0 ? -3 : -3;
+                    },
+                },
+            });
+            console.log(legendData);
+            // 准备待返回的配置项，把准备好的 legendData、series 传入。
+            var option = {
+                tooltip:{
+                    formatter:function(params){
+                        return params.seriesName;
+                    }
+                },
+                 title: {
+                    text: "中国概念股行情",
+                    top: "5%",
+                    left: "44%",
+                    textStyle:
+                    {
+                        color: 'rgb(255,255,255,1)',
+                        fontSize: 16
+                    }
+                },
+                legend: {
+                    show:true,
+                    icon: 'circle',
+                    orient: 'horizontal',
+                    data: legendData,
+                    left:'15%',
+                    top: '10%',
+                    itemGap: 15,
+                    itemWidth: 18,
+                    itemHeight: 18,
+                    textStyle: {
+                        // color: '#031245',
+                        // fontSize: 18,
+                        // fontFamily: 'Source Han Sans CN',
+                        rich:{
+                                name: {
+                                    align:'middle',
+                                    color: '#ffa800',
+                                    fontSize: 20,
+                                    fontWeight: 'bold',
+                                    lineHeight: 35,
+                                    padding:[20,0,30,15]
+                                },
+                                id: {
+                                    align:'left',
+                                    color: 'white',
+                                    fontSize: 16,
+                                    lineHeight: 30,
+                                    padding:[20,0,30,10]
+                                },
+                                value: {
+                                    align:'right',
+                                    color: 'white',
+                                    fontSize: 16,
+                                    lineHeight: 24,
+                                    padding:[20,0,30,10]
+                                }
+                            }
+                        },
+                    formatter: function(name) {
+                        var dataItem = legendData.find(item => item.name === name);
+                        if (dataItem) {
+                            return '{name|' + dataItem.name + '}'+'\n'+'{id|' + dataItem.id + '}'+'  |'+'{value|' + dataItem.value + '}';
+                        }
+                        return '';
+                    }
+                },
+                xAxis3D: {},
+                yAxis3D: {},
+                zAxis3D: {},
+                grid3D: {
+                    viewControl: {
+                        autoRotate: true, // 自动旋转
+                    },
+                    bottom:'90%',
+                    left: '7%',
+                    width: '95%',
+                    show: false,
+                    boxHeight: 30,
+            // boxWidth和boxDepth这两个属性值保持一致，才可以在调整饼图宽度的时候保持水平，不然就会歪歪扭扭
+                    boxWidth: 100,
+                    boxDepth: 100,
+                },
+                series: series,
+            };
+            return option;
+        }
+
+        
+            // 传入数据生成 option
+            var option = getPie3D(dataList, 0.7 )
+            // console.log(option);
+            myCharts.setOption(option)
+        
+    </script>
+
+   
+    <script>
+        var TStitles = [[TStitles | safe]]
+        var TStime = [[TStime | safe]]
+        var linkList = []
+        for (var i = 0; i < 5; i++) {
+            var obj = {
+                source: '20',
+                target: String(i),
+                value: 20
+            }
+            linkList.push(obj)
+        }
+        for (var i = 5; i < 10; i++) {
+            var obj = {
+                source: '21',
+                target: String(i),
+                value: 20
+            }
+            linkList.push(obj)
+        }
+        for (var i = 10; i < 15; i++) {
+            var obj = {
+                source: '22',
+                target: String(i),
+                value: 20
+            }
+            linkList.push(obj)
+        }
+        for (var i = 15; i < 20; i++) {
+            var obj = {
+                source: '23',
+                target: String(i),
+                value: 20
+            }
+            linkList.push(obj)
+        }
+        console.log(linkList);
+        var dataList = []
+        for (var i = 0; i < 20; i++) {
+            dataList.push(TStitles[i])
+        }
+        dataList.push('iPhone', 'iPad', 'Apple Watch', 'Mac')
+        console.log(dataList.length);
+        var data = []
+        for (var i = 0; i < 20; i++) {
+            var obj = {
+                id: String(i),
+                name: dataList[i],
+                depth: 1
+            };
+            data.push(obj);
+        }
+        for (var i = 20; i < 24; i++) {
+            var obj = {
+                id: String(i),
+                name: dataList[i],
+                depth: 0
+            };
+            data.push(obj);
+        }
+        console.log(data);
+
+        var myCharts = echarts.init(document.querySelector('.TechSankey'))
+        var option = {
+            tooltip: {
+                trigger: 'item',
+                triggerOn: 'mousemove',
+
+            },
+            title:
+             {
+                text: '苹果汇——最热文章',
+                left: "center",
+                top: 0 ,
+                textStyle:
+                {
+                    color: 'rgb(255,255,255,1)',
+                    fontSize: 16
+                }
+            },
+            series: [
+                {
+                    type: 'sankey',
+                    nodeAlign: 'left',
+                    top:40,
+                    right: 400,
+                    data: data,
+                    links: linkList,
+                    labellayout: {
+                        width: 60,
+                    },
+                    emphasis: {
+                        focus: 'adjacency'
+                    },
+                    label: {
+                        formatter: '{b}',
+                        color: '#87CEFA'
+                    },
+                    tooltip: {
+                        formatter: '{b}'
+                    },
+                    levels: [
+                        {
+                            depth: 0,
+                            itemStyle: {
+                                color: {
+                                    type: 'linear',
+                                    x: 0,
+                                    y: 0,
+                                    x2: 0,
+                                    y2: 1,
+                                    colorStops: [{
+                                        offset: 0, color: '#00cfff' // 开始颜色
+                                    }, {
+                                        offset: 1, color: '#ffe000' // 结束颜色
+                                    }],
+                                    global: false
+                                }
+                            },
+                            lineStyle: {
+                                color: 'source',
+                                opacity: 0.6
+                            }
+                        },
+                        {
+                            depth: 1,
+                            itemStyle: {
+                                color: {
+                                    type: 'linear',
+                                    x: 0,
+                                    y: 0,
+                                    x2: 0,
+                                    y2: 1,
+                                    colorStops: [{
+                                        offset: 0, color: '#00cfff' // 开始颜色
+                                    }, {
+                                        offset: 1, color: '#ffe000' // 结束颜色
+                                    }],
+                                    global: false
+                                }
+                            },
+                            lineStyle: {
+                                color: 'source',
+                                opacity: 0.6,
+
+                            }
+                        }
+                    ]
+                }],
+            lineStyle: {
+                curveness: 0.5
+            }
+        }
+        myCharts.setOption(option)
+    </script>
+
+</body>
+
+</html>
